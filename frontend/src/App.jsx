@@ -2,8 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 import "./index.css";
 import Filters from "./components/Filters";
 import KPICards from "./components/KPICards";
+import ClientTable from "./components/ClientTable";
 import useFilters from "./hooks/useFilters";
 import { fetchClients, fetchStatus, fetchMetric } from "./api/client";
+
+const PAGE_LIMIT = 20;
 
 export default function App() {
   const { filters, setFilter, resetFilters, apiParams } = useFilters();
@@ -12,11 +15,15 @@ export default function App() {
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
   const [kpis, setKpis] = useState({ closeRate: 0, topSector: "", topVendor: "" });
+  const [search, setSearch] = useState("");
+  const [offset, setOffset] = useState(0);
 
   const loadClients = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await fetchClients(apiParams);
+      const params = { ...apiParams, limit: PAGE_LIMIT, offset };
+      if (search) params.search = search;
+      const data = await fetchClients(params);
       setClients(data.items);
       setTotal(data.total);
     } catch {
@@ -25,7 +32,7 @@ export default function App() {
     } finally {
       setLoading(false);
     }
-  }, [apiParams]);
+  }, [apiParams, search, offset]);
 
   const loadKpis = useCallback(async () => {
     try {
@@ -34,7 +41,6 @@ export default function App() {
         fetchMetric("close-rate-by-vendor-sector", apiParams),
       ]);
 
-      // Overall close rate
       let totalClosed = 0;
       let totalAll = 0;
       let bestSector = "";
@@ -49,7 +55,6 @@ export default function App() {
       }
       const closeRate = totalAll > 0 ? ((totalClosed / totalAll) * 100).toFixed(1) : "0";
 
-      // Top vendor: aggregate close rate per vendor
       const vendorMap = {};
       for (const row of vendorData.data) {
         if (!vendorMap[row.vendor]) vendorMap[row.vendor] = { closed: 0, total: 0 };
@@ -74,11 +79,28 @@ export default function App() {
 
   useEffect(() => {
     loadClients();
+  }, [loadClients]);
+
+  useEffect(() => {
     loadKpis();
-  }, [loadClients, loadKpis]);
+  }, [loadKpis]);
 
   useEffect(() => {
     fetchStatus().then(setStatus).catch(() => {});
+    // ponytail: poll status every 10s so progress bar updates during categorization
+    const id = setInterval(() => {
+      fetchStatus().then(setStatus).catch(() => {});
+    }, 10000);
+    return () => clearInterval(id);
+  }, []);
+
+  const handleSearch = useCallback((term) => {
+    setSearch(term);
+    setOffset(0);
+  }, []);
+
+  const handlePaginate = useCallback((newOffset) => {
+    setOffset(newOffset);
   }, []);
 
   return (
@@ -86,13 +108,7 @@ export default function App() {
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <h1 className="text-xl font-bold text-gray-900">Vambe Dashboard</h1>
-          {status && (
-            <p className="text-sm text-gray-500 mt-1">
-              {status.categorized}/{status.total} categorized
-              ({status.progress}%)
-              {!status.is_complete && " — processing..."}
-            </p>
-          )}
+          {status && <CategorizationProgress status={status} />}
         </div>
       </header>
 
@@ -110,75 +126,41 @@ export default function App() {
           topVendor={kpis.topVendor}
         />
 
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-              Clients ({total})
-            </h2>
-            {loading && (
-              <span className="text-xs text-gray-400">Loading...</span>
-            )}
-          </div>
-
-          {clients.length === 0 ? (
-            <p className="text-gray-400 text-sm py-8 text-center">
-              No clients match the current filters.
-            </p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-2 px-3 font-medium text-gray-500">
-                      Name
-                    </th>
-                    <th className="text-left py-2 px-3 font-medium text-gray-500">
-                      Email
-                    </th>
-                    <th className="text-left py-2 px-3 font-medium text-gray-500">
-                      Sector
-                    </th>
-                    <th className="text-left py-2 px-3 font-medium text-gray-500">
-                      Vendor
-                    </th>
-                    <th className="text-left py-2 px-3 font-medium text-gray-500">
-                      Channel
-                    </th>
-                    <th className="text-left py-2 px-3 font-medium text-gray-500">
-                      Closed
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {clients.map((c) => (
-                    <tr
-                      key={c.id}
-                      className="border-b border-gray-100 hover:bg-gray-50"
-                    >
-                      <td className="py-2 px-3">{c.name}</td>
-                      <td className="py-2 px-3 text-gray-500">{c.email}</td>
-                      <td className="py-2 px-3">{c.sector || "—"}</td>
-                      <td className="py-2 px-3">{c.vendor || "—"}</td>
-                      <td className="py-2 px-3">{c.channel || "—"}</td>
-                      <td className="py-2 px-3">
-                        <span
-                          className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                            c.closed
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {c.closed ? "Yes" : "No"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+        <ClientTable
+          clients={clients}
+          total={total}
+          loading={loading}
+          onSearch={handleSearch}
+          onPaginate={handlePaginate}
+          limit={PAGE_LIMIT}
+          offset={offset}
+        />
       </main>
+    </div>
+  );
+}
+
+function CategorizationProgress({ status }) {
+  const { progress, categorized, total, is_complete } = status;
+  return (
+    <div className="mt-2">
+      <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+        <span>
+          {categorized}/{total} categorized
+        </span>
+        <span>{progress}%</span>
+      </div>
+      <div className="w-full bg-gray-200 rounded-full h-2">
+        <div
+          className={`h-2 rounded-full transition-all duration-500 ${
+            is_complete ? "bg-green-500" : "bg-blue-500"
+          }`}
+          style={{ width: `${Math.min(progress, 100)}%` }}
+        />
+      </div>
+      {!is_complete && (
+        <p className="text-xs text-gray-400 mt-1">Processing in background...</p>
+      )}
     </div>
   );
 }

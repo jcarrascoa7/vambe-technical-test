@@ -182,7 +182,7 @@
         "Categorization progress bar shows percentage while background processing runs",
         "App builds and runs without errors via docker compose up"
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 11,
@@ -245,6 +245,7 @@
         "Dashboard shows real data with working charts and filters",
         "All pytest tests pass: docker compose exec app pytest backend/tests/ -v",
         "README.md contains: project description, local setup instructions (docker compose up --build), architecture overview, key design decisions and trade-offs",
+        "README.md should be written in Spanish",
         "No debug print() statements, no TODOs without context, no temp files"
       ],
       "status": "pending"
