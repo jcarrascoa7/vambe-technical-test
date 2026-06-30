@@ -7,7 +7,8 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = "postgres"
     POSTGRES_DB: str = "vambe"
     GEMMA_API_KEY: str = ""
-    GEMMA_API_URL: str = "https://generativelanguage.googleapis.com/v1beta/models/gemma-4:generateContent"
+    GEMMA_API_URL: str = "https://generativelanguage.googleapis.com/v1beta/models"
+    GEMMA_MODEL: str = "gemma-4"
     MAX_RECORDS_TO_CATEGORIZE: int = 1000
 
     class Config:
