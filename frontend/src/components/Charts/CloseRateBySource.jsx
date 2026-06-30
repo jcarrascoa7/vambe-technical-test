@@ -57,7 +57,7 @@ export default function CloseRateBySource({ apiParams }) {
   return (
     <div className="bg-white rounded-lg shadow p-4">
       <h3 className="text-sm font-semibold text-gray-700 mb-3">
-        Close Rate by Source
+        Tasa de Cierre por Fuente
       </h3>
       <Bar
         data={chartData}
@@ -102,7 +102,7 @@ export default function CloseRateBySource({ apiParams }) {
 function ChartPlaceholder() {
   return (
     <div className="bg-white rounded-lg shadow p-4 h-64 flex items-center justify-center">
-      <p className="text-gray-400 text-sm">Loading chart...</p>
+      <p className="text-gray-400 text-sm">Cargando gráfico...</p>
     </div>
   );
 }

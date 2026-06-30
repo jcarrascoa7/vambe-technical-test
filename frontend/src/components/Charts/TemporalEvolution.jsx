@@ -63,7 +63,7 @@ export default function TemporalEvolution({ apiParams }) {
   return (
     <div className="bg-white rounded-lg shadow p-4">
       <h3 className="text-sm font-semibold text-gray-700 mb-3">
-        Leads &amp; Closes Over Time
+        Leads y Cierres en el Tiempo
       </h3>
       <Line
         data={chartData}
@@ -91,7 +91,7 @@ export default function TemporalEvolution({ apiParams }) {
 function ChartPlaceholder() {
   return (
     <div className="bg-white rounded-lg shadow p-4 h-64 flex items-center justify-center">
-      <p className="text-gray-400 text-sm">Loading chart...</p>
+      <p className="text-gray-400 text-sm">Cargando gráfico...</p>
     </div>
   );
 }

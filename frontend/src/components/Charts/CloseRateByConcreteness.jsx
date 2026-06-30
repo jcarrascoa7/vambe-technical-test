@@ -57,7 +57,7 @@ export default function CloseRateByConcreteness({ apiParams }) {
   return (
     <div className="bg-white rounded-lg shadow p-4">
       <h3 className="text-sm font-semibold text-gray-700 mb-3">
-        Close Rate by Language Concreteness
+        Tasa de Cierre por Concreción del Lenguaje
       </h3>
       <Bar
         data={chartData}
@@ -87,7 +87,7 @@ export default function CloseRateByConcreteness({ apiParams }) {
 function ChartPlaceholder() {
   return (
     <div className="bg-white rounded-lg shadow p-4 h-64 flex items-center justify-center">
-      <p className="text-gray-400 text-sm">Loading chart...</p>
+      <p className="text-gray-400 text-sm">Cargando gráfico...</p>
     </div>
   );
 }
