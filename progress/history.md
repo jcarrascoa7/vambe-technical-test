@@ -451,3 +451,32 @@ Append-only log of completed sessions.
 - `frontend/src/components/ClientTable.jsx` — expanded with all dimensions + transcription, localized
 
 **Tests**: 135/135 passing (125 existing + 10 new insight tests)
+
+---
+
+## Session: 2026-06-30 — Feature 15: integration_and_polish
+
+**Status**: done
+**Plan**:
+1. Read docs/architecture.md, docs/tech-stack.md, docs/domain.md to understand system
+2. Check existing codebase for debug prints, TODOs, temp files
+3. Write README.md in Spanish with all required sections
+4. Write integration test (no debug prints verification)
+5. Fix debug print in backend/main.py → logging.info
+6. Run ./init.sh until green
+7. Write progress/impl_integration_and_polish.md
+
+**Key decisions**:
+- Fixed debug `print()` in `backend/main.py` → replaced with `logger.info()` (logging module was already imported)
+- `backend/test_categorization.py` and `backend/test_llm_connection.py` have prints but they are standalone diagnostic scripts, not production code — left as-is
+- No TODOs without context found in codebase
+- No temp files found
+- README.md written entirely in Spanish with all required sections: setup instructions, architecture docs, stack description, LLM configuration, key decisions (discarded dimensions, LLM consistency techniques, stack justification), repo link, deploy placeholder
+
+**Files modified**:
+- `backend/main.py` — replaced `print()` with `logger.info()`
+- `README.md` — full rewrite in Spanish
+- `backend/tests/test_integration.py` — new: AST-based verification of no debug prints in production modules
+- `progress/impl_integration_and_polish.md` — implementation summary
+
+**Tests**: All passing (./init.sh green)
