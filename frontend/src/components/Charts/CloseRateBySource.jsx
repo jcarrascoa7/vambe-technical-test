@@ -12,7 +12,15 @@ import {
 import annotationPlugin from "chartjs-plugin-annotation";
 import { fetchMetric } from "../../api/client";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, annotationPlugin);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  annotationPlugin,
+);
 
 export default function CloseRateBySource({ apiParams }) {
   const [chartData, setChartData] = useState(null);
@@ -21,7 +29,9 @@ export default function CloseRateBySource({ apiParams }) {
   useEffect(() => {
     fetchMetric("close-rate-by-source", apiParams)
       .then((res) => {
-        const sorted = [...res.data].sort((a, b) => b.close_rate - a.close_rate);
+        const sorted = [...res.data].sort(
+          (a, b) => b.close_rate - a.close_rate,
+        );
         const totalClosed = sorted.reduce((s, d) => s + d.closed_count, 0);
         const totalAll = sorted.reduce((s, d) => s + d.total, 0);
         const avg = totalAll > 0 ? (totalClosed / totalAll) * 100 : 0;

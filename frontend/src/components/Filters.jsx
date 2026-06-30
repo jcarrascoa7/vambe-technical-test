@@ -138,10 +138,4 @@ const SOURCES = [
   "Other",
 ];
 
-const CHANNELS = [
-  "WhatsApp",
-  "Instagram",
-  "Phone",
-  "Email",
-  "Multi-channel",
-];
+const CHANNELS = ["WhatsApp", "Instagram", "Phone", "Email", "Multi-channel"];

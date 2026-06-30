@@ -12,7 +12,15 @@ import {
 } from "chart.js";
 import { fetchMetric } from "../../api/client";
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
 export default function TemporalEvolution({ apiParams }) {
   const [chartData, setChartData] = useState(null);
@@ -20,7 +28,9 @@ export default function TemporalEvolution({ apiParams }) {
   useEffect(() => {
     fetchMetric("temporal-evolution", apiParams)
       .then((res) => {
-        const sorted = [...res.data].sort((a, b) => a.month.localeCompare(b.month));
+        const sorted = [...res.data].sort((a, b) =>
+          a.month.localeCompare(b.month),
+        );
         setChartData({
           labels: sorted.map((d) => d.month),
           datasets: [

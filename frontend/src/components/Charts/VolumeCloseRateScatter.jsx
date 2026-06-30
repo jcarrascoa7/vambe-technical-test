@@ -77,7 +77,10 @@ export default function VolumeCloseRateScatter({ apiParams }) {
       />
       <div className="flex flex-wrap gap-2 mt-3">
         {labels.map((label, i) => (
-          <span key={label} className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
+          <span
+            key={label}
+            className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded"
+          >
             {i + 1}. {label}
           </span>
         ))}

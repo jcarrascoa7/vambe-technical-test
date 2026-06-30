@@ -23,7 +23,11 @@ export default function App() {
   const [total, setTotal] = useState(0);
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [kpis, setKpis] = useState({ closeRate: 0, topSector: "", topVendor: "" });
+  const [kpis, setKpis] = useState({
+    closeRate: 0,
+    topSector: "",
+    topVendor: "",
+  });
   const [search, setSearch] = useState("");
   const [offset, setOffset] = useState(0);
 
@@ -62,11 +66,13 @@ export default function App() {
           bestSector = row.sector;
         }
       }
-      const closeRate = totalAll > 0 ? ((totalClosed / totalAll) * 100).toFixed(1) : "0";
+      const closeRate =
+        totalAll > 0 ? ((totalClosed / totalAll) * 100).toFixed(1) : "0";
 
       const vendorMap = {};
       for (const row of vendorData.data) {
-        if (!vendorMap[row.vendor]) vendorMap[row.vendor] = { closed: 0, total: 0 };
+        if (!vendorMap[row.vendor])
+          vendorMap[row.vendor] = { closed: 0, total: 0 };
         vendorMap[row.vendor].closed += row.closed_count;
         vendorMap[row.vendor].total += row.total;
       }
@@ -95,10 +101,14 @@ export default function App() {
   }, [loadKpis]);
 
   useEffect(() => {
-    fetchStatus().then(setStatus).catch(() => {});
+    fetchStatus()
+      .then(setStatus)
+      .catch(() => {});
     // ponytail: poll status every 10s so progress bar updates during categorization
     const id = setInterval(() => {
-      fetchStatus().then(setStatus).catch(() => {});
+      fetchStatus()
+        .then(setStatus)
+        .catch(() => {});
     }, 10000);
     return () => clearInterval(id);
   }, []);
@@ -180,7 +190,9 @@ function CategorizationProgress({ status }) {
         />
       </div>
       {!is_complete && (
-        <p className="text-xs text-gray-400 mt-1">Processing in background...</p>
+        <p className="text-xs text-gray-400 mt-1">
+          Processing in background...
+        </p>
       )}
     </div>
   );

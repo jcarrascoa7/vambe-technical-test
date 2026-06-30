@@ -1,6 +1,14 @@
 import { useState, useCallback } from "react";
 
-export default function ClientTable({ clients, total, loading, onSearch, onPaginate, limit, offset }) {
+export default function ClientTable({
+  clients,
+  total,
+  loading,
+  onSearch,
+  onPaginate,
+  limit,
+  offset,
+}) {
   const [searchInput, setSearchInput] = useState("");
 
   const handleSearch = useCallback(
@@ -8,7 +16,7 @@ export default function ClientTable({ clients, total, loading, onSearch, onPagin
       e.preventDefault();
       onSearch(searchInput);
     },
-    [searchInput, onSearch]
+    [searchInput, onSearch],
   );
 
   const handleClear = useCallback(() => {
@@ -25,9 +33,7 @@ export default function ClientTable({ clients, total, loading, onSearch, onPagin
         <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
           Clients ({total})
         </h2>
-        {loading && (
-          <span className="text-xs text-gray-400">Loading...</span>
-        )}
+        {loading && <span className="text-xs text-gray-400">Loading...</span>}
       </div>
 
       <form onSubmit={handleSearch} className="flex gap-2 mb-4">
