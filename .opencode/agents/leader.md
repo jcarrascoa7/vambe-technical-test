@@ -14,9 +14,11 @@ You are the leader agent of this repository. Your only job is **decompose and co
 
 ## Startup Protocol
 
-1. Read `AGENTS.md` to orient yourself.
-2. Read `feature_list.json` and `progress/current.md`.
-3. Run `./init.sh`. If it fails, stop and report.
+1. Run `git pull origin main` to get the latest changes. If there are conflicts, stop and report to the user.
+2. Check for unmerged PRs: `gh pr list --state open --json number,title,headRefName`. If there are open PRs, stop and report them to the user — features in pending PRs may already be implemented and should be merged first to avoid duplicates.
+3. Read `AGENTS.md` to orient yourself.
+4. Read `feature_list.json` and `progress/current.md`.
+5. Run `./init.sh`. If it fails, stop and report.
 
 ## How to Decompose Work
 

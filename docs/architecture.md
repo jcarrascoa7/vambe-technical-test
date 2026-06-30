@@ -42,7 +42,6 @@ graph TB
         subgraph InternalModules
             ETL["ETL Module (pandas)"]
             CAT["Categorizer (prompts + validation)"]
-            EXTRACT["Extractor (regex + signals)"]
         end
 
         ReactBlock["React Frontend (static build)"]
@@ -59,8 +58,7 @@ graph TB
     end
 
     CSVFile["CSV vambe_clients_10k.csv"] --> ETL
-    ETL --> EXTRACT
-    EXTRACT --> CAT
+    ETL --> CAT
     CAT -->|"httpx async (batches of 50)"| Gemma
     Gemma -->|"categorized JSON"| CAT
     CAT --> PostgresLabel
@@ -118,8 +116,7 @@ How data moves through the system in three stages:
 flowchart LR
     subgraph S1[ETL]
         CSV["CSV"] --> Clean["Clean (pandas)"]
-        Clean --> Extract["Extract signals (regex)"]
-        Extract --> Load["Load to PostgreSQL"]
+        Clean --> Load["Load to PostgreSQL"]
     end
 
     subgraph S2[Categorization]

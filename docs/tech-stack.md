@@ -37,7 +37,6 @@ vambe-dashboard/
 │   ├── models.py               # SQLAlchemy models (Client, MetricCache)
 │   ├── etl/
 │   │   ├── cleaner.py          # CSV cleaning (pandas)
-│   │   ├── extractor.py        # Signal extraction (regex)
 │   │   └── loader.py           # Load to PostgreSQL
 │   ├── categorizer/
 │   │   ├── prompts.py          # Structured prompts + few-shot
