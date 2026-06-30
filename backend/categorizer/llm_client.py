@@ -79,9 +79,7 @@ async def call_llm(
             data = response.json()
 
         except httpx.TimeoutException:
-            logger.warning(
-                "LLM API timeout (attempt %d/%d)", attempt + 1, max_retries
-            )
+            logger.warning("LLM API timeout (attempt %d/%d)", attempt + 1, max_retries)
             await asyncio.sleep(2**attempt)
             continue
 
