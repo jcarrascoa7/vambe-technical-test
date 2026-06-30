@@ -142,7 +142,7 @@
         "Records with 'Not specified' in a dimension are excluded from metrics that depend on that dimension (see docs/domain.md Data Exclusion Rule)",
         "backend/tests/test_api_metrics.py covers: all metric endpoints, zero records edge case"
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 8,
