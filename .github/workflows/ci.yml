@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Lint Python (ruff)
+        run: pip install ruff && ruff check backend/
+
+      - name: Format check (black)
+        run: pip install black==25.11.0 && black --check backend/
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Frontend lint (eslint)
+        working-directory: frontend
+        run: npm ci && npm run lint
+
+      - name: Frontend format check (prettier)
+        working-directory: frontend
+        run: npm run format:check
+
+      - name: Prepare env file
+        run: cp .env.example .env
+
+      - name: Build containers
+        run: docker compose build
+
+      - name: Start services
+        run: docker compose up -d
+
+      - name: Wait for PostgreSQL
+        run: |
+          for i in $(seq 1 30); do
+            if docker compose exec -T db pg_isready -U postgres >/dev/null 2>&1; then
+              echo "PostgreSQL ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "PostgreSQL did not become ready"
+          exit 1
+
+      - name: Run tests
+        run: docker compose exec -T app pytest backend/tests/ -v
+
+      - name: Verify frontend dist exists
+        run: docker compose exec -T app test -d frontend_dist

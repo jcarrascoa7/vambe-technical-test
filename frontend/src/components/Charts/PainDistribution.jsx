@@ -11,7 +11,14 @@ import {
 } from "chart.js";
 import { fetchMetric } from "../../api/client";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
 const PAIN_COLORS = {
   "High message volume": "#ef4444",
@@ -37,7 +44,8 @@ export default function PainDistribution({ apiParams }) {
         for (const row of res.data) {
           const key = `${row.sector}||${row.pain}`;
           lookup[key] = row.count;
-          sectorTotals[row.sector] = (sectorTotals[row.sector] || 0) + row.count;
+          sectorTotals[row.sector] =
+            (sectorTotals[row.sector] || 0) + row.count;
         }
 
         const datasets = pains.map((pain) => {

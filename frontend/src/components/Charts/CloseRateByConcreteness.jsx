@@ -11,7 +11,14 @@ import {
 } from "chart.js";
 import { fetchMetric } from "../../api/client";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
 export default function CloseRateByConcreteness({ apiParams }) {
   const [chartData, setChartData] = useState(null);
@@ -27,11 +34,7 @@ export default function CloseRateByConcreteness({ apiParams }) {
 
         const colors = res.data.map((d) => {
           const r = d.close_rate * 100;
-          return r === max
-            ? "#10b981"
-            : r === min
-              ? "#ef4444"
-              : "#3b82f6";
+          return r === max ? "#10b981" : r === min ? "#ef4444" : "#3b82f6";
         });
 
         setChartData({
@@ -72,7 +75,9 @@ export default function CloseRateByConcreteness({ apiParams }) {
       />
       {gap > 0 && (
         <p className="text-xs text-gray-500 mt-2">
-          Gap: <span className="font-bold text-gray-700">{gap.toFixed(1)}pp</span> between highest and lowest concreteness levels
+          Gap:{" "}
+          <span className="font-bold text-gray-700">{gap.toFixed(1)}pp</span>{" "}
+          between highest and lowest concreteness levels
         </p>
       )}
     </div>

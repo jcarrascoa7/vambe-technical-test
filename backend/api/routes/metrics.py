@@ -19,7 +19,9 @@ def _categorized_only(db: Session):
     return db.query(Client).filter(Client.categorized == True)  # noqa: E712
 
 
-def _apply_filters(query, sector, size, volume, source, channel, vendor, closed, date_from, date_to):
+def _apply_filters(
+    query, sector, size, volume, source, channel, vendor, closed, date_from, date_to
+):
     """Apply optional filters to a query."""
     if sector is not None:
         query = query.filter(Client.sector == sector)
@@ -57,14 +59,17 @@ def close_rate_by_sector(
 ):
     """Close rate per sector (closed=1 by sector / total by sector)."""
     query = _categorized_only(db)
-    query = _apply_filters(query, sector, size, volume, source, channel, vendor, closed, date_from, date_to)
+    query = _apply_filters(
+        query, sector, size, volume, source, channel, vendor, closed, date_from, date_to
+    )
     rows = (
-        query
-        .filter(Client.sector != NOT_SPECIFIED, Client.sector.isnot(None))
+        query.filter(Client.sector != NOT_SPECIFIED, Client.sector.isnot(None))
         .with_entities(
             Client.sector,
             func.count().label("total"),
-            func.sum(case((Client.closed == True, 1), else_=0)).label("closed_count"),  # noqa: E712
+            func.sum(case((Client.closed == True, 1), else_=0)).label(
+                "closed_count"
+            ),  # noqa: E712
         )
         .group_by(Client.sector)
         .all()
@@ -74,7 +79,9 @@ def close_rate_by_sector(
             "sector": r.sector,
             "total": r.total,
             "closed_count": int(r.closed_count or 0),
-            "close_rate": round(int(r.closed_count or 0) / r.total, 4) if r.total else 0,
+            "close_rate": (
+                round(int(r.closed_count or 0) / r.total, 4) if r.total else 0
+            ),
         }
         for r in rows
     ]
@@ -96,15 +103,18 @@ def close_rate_by_vendor_sector(
 ):
     """Heatmap-ready data: close rate by (vendor, sector)."""
     query = _categorized_only(db)
-    query = _apply_filters(query, sector, size, volume, source, channel, vendor, closed, date_from, date_to)
+    query = _apply_filters(
+        query, sector, size, volume, source, channel, vendor, closed, date_from, date_to
+    )
     rows = (
-        query
-        .filter(Client.sector != NOT_SPECIFIED, Client.sector.isnot(None))
+        query.filter(Client.sector != NOT_SPECIFIED, Client.sector.isnot(None))
         .with_entities(
             Client.vendor,
             Client.sector,
             func.count().label("total"),
-            func.sum(case((Client.closed == True, 1), else_=0)).label("closed_count"),  # noqa: E712
+            func.sum(case((Client.closed == True, 1), else_=0)).label(
+                "closed_count"
+            ),  # noqa: E712
         )
         .group_by(Client.vendor, Client.sector)
         .all()
@@ -115,7 +125,9 @@ def close_rate_by_vendor_sector(
             "sector": r.sector,
             "total": r.total,
             "closed_count": int(r.closed_count or 0),
-            "close_rate": round(int(r.closed_count or 0) / r.total, 4) if r.total else 0,
+            "close_rate": (
+                round(int(r.closed_count or 0) / r.total, 4) if r.total else 0
+            ),
         }
         for r in rows
     ]
@@ -137,14 +149,17 @@ def close_rate_by_source(
 ):
     """Close rate per acquisition source."""
     query = _categorized_only(db)
-    query = _apply_filters(query, sector, size, volume, source, channel, vendor, closed, date_from, date_to)
+    query = _apply_filters(
+        query, sector, size, volume, source, channel, vendor, closed, date_from, date_to
+    )
     rows = (
-        query
-        .filter(Client.source != NOT_SPECIFIED, Client.source.isnot(None))
+        query.filter(Client.source != NOT_SPECIFIED, Client.source.isnot(None))
         .with_entities(
             Client.source,
             func.count().label("total"),
-            func.sum(case((Client.closed == True, 1), else_=0)).label("closed_count"),  # noqa: E712
+            func.sum(case((Client.closed == True, 1), else_=0)).label(
+                "closed_count"
+            ),  # noqa: E712
         )
         .group_by(Client.source)
         .all()
@@ -154,7 +169,9 @@ def close_rate_by_source(
             "source": r.source,
             "total": r.total,
             "closed_count": int(r.closed_count or 0),
-            "close_rate": round(int(r.closed_count or 0) / r.total, 4) if r.total else 0,
+            "close_rate": (
+                round(int(r.closed_count or 0) / r.total, 4) if r.total else 0
+            ),
         }
         for r in rows
     ]
@@ -176,10 +193,11 @@ def pain_distribution_by_sector(
 ):
     """Count of each pain category per sector."""
     query = _categorized_only(db)
-    query = _apply_filters(query, sector, size, volume, source, channel, vendor, closed, date_from, date_to)
+    query = _apply_filters(
+        query, sector, size, volume, source, channel, vendor, closed, date_from, date_to
+    )
     rows = (
-        query
-        .filter(
+        query.filter(
             Client.pain != NOT_SPECIFIED,
             Client.pain.isnot(None),
             Client.sector != NOT_SPECIFIED,
@@ -193,10 +211,7 @@ def pain_distribution_by_sector(
         .group_by(Client.sector, Client.pain)
         .all()
     )
-    data = [
-        {"sector": r.sector, "pain": r.pain, "count": r.count}
-        for r in rows
-    ]
+    data = [{"sector": r.sector, "pain": r.pain, "count": r.count} for r in rows]
     return MetricResponse(metric="pain_distribution_by_sector", data=data)
 
 
@@ -215,14 +230,19 @@ def close_rate_by_concreteness(
 ):
     """Close rate per language concreteness level."""
     query = _categorized_only(db)
-    query = _apply_filters(query, sector, size, volume, source, channel, vendor, closed, date_from, date_to)
+    query = _apply_filters(
+        query, sector, size, volume, source, channel, vendor, closed, date_from, date_to
+    )
     rows = (
-        query
-        .filter(Client.concreteness != NOT_SPECIFIED, Client.concreteness.isnot(None))
+        query.filter(
+            Client.concreteness != NOT_SPECIFIED, Client.concreteness.isnot(None)
+        )
         .with_entities(
             Client.concreteness,
             func.count().label("total"),
-            func.sum(case((Client.closed == True, 1), else_=0)).label("closed_count"),  # noqa: E712
+            func.sum(case((Client.closed == True, 1), else_=0)).label(
+                "closed_count"
+            ),  # noqa: E712
         )
         .group_by(Client.concreteness)
         .all()
@@ -232,7 +252,9 @@ def close_rate_by_concreteness(
             "concreteness": r.concreteness,
             "total": r.total,
             "closed_count": int(r.closed_count or 0),
-            "close_rate": round(int(r.closed_count or 0) / r.total, 4) if r.total else 0,
+            "close_rate": (
+                round(int(r.closed_count or 0) / r.total, 4) if r.total else 0
+            ),
         }
         for r in rows
     ]
@@ -254,10 +276,11 @@ def sector_distribution(
 ):
     """Count by sector / total."""
     query = _categorized_only(db)
-    query = _apply_filters(query, sector, size, volume, source, channel, vendor, closed, date_from, date_to)
+    query = _apply_filters(
+        query, sector, size, volume, source, channel, vendor, closed, date_from, date_to
+    )
     rows = (
-        query
-        .filter(Client.sector != NOT_SPECIFIED, Client.sector.isnot(None))
+        query.filter(Client.sector != NOT_SPECIFIED, Client.sector.isnot(None))
         .with_entities(
             Client.sector,
             func.count().label("count"),
@@ -310,7 +333,9 @@ def avg_volume_by_sector(db: Session = Depends(get_db)):
     data = [
         {
             "sector": s,
-            "avg_volume": round(sector_totals[s] / sector_counts[s], 2) if sector_counts[s] else 0,
+            "avg_volume": (
+                round(sector_totals[s] / sector_counts[s], 2) if sector_counts[s] else 0
+            ),
             "total_records": sector_counts[s],
         }
         for s in sorted(sector_totals)
@@ -333,7 +358,10 @@ def integrations_distribution(db: Session = Depends(get_db)):
             item = item.strip()
             if item:
                 counts[item] = counts.get(item, 0) + 1
-    data = [{"integration": k, "count": v} for k, v in sorted(counts.items(), key=lambda x: -x[1])]
+    data = [
+        {"integration": k, "count": v}
+        for k, v in sorted(counts.items(), key=lambda x: -x[1])
+    ]
     return MetricResponse(metric="integrations_distribution", data=data)
 
 
@@ -346,7 +374,9 @@ def close_rate_by_channel(db: Session = Depends(get_db)):
         .with_entities(
             Client.channel,
             func.count().label("total"),
-            func.sum(case((Client.closed == True, 1), else_=0)).label("closed_count"),  # noqa: E712
+            func.sum(case((Client.closed == True, 1), else_=0)).label(
+                "closed_count"
+            ),  # noqa: E712
         )
         .group_by(Client.channel)
         .all()
@@ -356,7 +386,9 @@ def close_rate_by_channel(db: Session = Depends(get_db)):
             "channel": r.channel,
             "total": r.total,
             "closed_count": int(r.closed_count or 0),
-            "close_rate": round(int(r.closed_count or 0) / r.total, 4) if r.total else 0,
+            "close_rate": (
+                round(int(r.closed_count or 0) / r.total, 4) if r.total else 0
+            ),
         }
         for r in rows
     ]
@@ -403,12 +435,17 @@ def top_sectors_by_volume_rate(db: Session = Depends(get_db)):
         .with_entities(
             Client.sector,
             func.count().label("total"),
-            func.sum(case((Client.closed == True, 1), else_=0)).label("closed_count"),  # noqa: E712
+            func.sum(case((Client.closed == True, 1), else_=0)).label(
+                "closed_count"
+            ),  # noqa: E712
         )
         .group_by(Client.sector)
         .all()
     )
-    close_map = {r.sector: (int(r.closed_count or 0) / r.total if r.total else 0) for r in close_rows}
+    close_map = {
+        r.sector: (int(r.closed_count or 0) / r.total if r.total else 0)
+        for r in close_rows
+    }
 
     # Get avg volume per sector
     vol_rows = (
@@ -436,14 +473,20 @@ def top_sectors_by_volume_rate(db: Session = Depends(get_db)):
 
     data = []
     for sector in close_map:
-        avg_vol = sector_totals.get(sector, 0) / sector_counts.get(sector, 1) if sector_counts.get(sector) else 0
+        avg_vol = (
+            sector_totals.get(sector, 0) / sector_counts.get(sector, 1)
+            if sector_counts.get(sector)
+            else 0
+        )
         rate = close_map.get(sector, 0)
-        data.append({
-            "sector": sector,
-            "avg_volume": round(avg_vol, 2),
-            "close_rate": round(rate, 4),
-            "volume_rate_score": round(avg_vol * rate, 2),
-        })
+        data.append(
+            {
+                "sector": sector,
+                "avg_volume": round(avg_vol, 2),
+                "close_rate": round(rate, 4),
+                "volume_rate_score": round(avg_vol * rate, 2),
+            }
+        )
     data.sort(key=lambda x: -x["volume_rate_score"])
     return MetricResponse(metric="top_sectors_by_volume_rate", data=data)
 

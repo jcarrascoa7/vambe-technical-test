@@ -69,7 +69,12 @@ VALID_CATEGORIES = {
         "Team saturation",
         "No 24/7 availability",
     ],
-    "concreteness": ["Concrete/Actionable", "Tentative/Exploratory", "Mixed", "Not specified"],
+    "concreteness": [
+        "Concrete/Actionable",
+        "Tentative/Exploratory",
+        "Mixed",
+        "Not specified",
+    ],
 }
 
 # Map inquiry_volume bucket to a representative integer for metric calculations.

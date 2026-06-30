@@ -11,7 +11,14 @@ import {
 } from "chart.js";
 import { fetchMetric } from "../../api/client";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
 export default function CloseRateBySector({ apiParams }) {
   const [chartData, setChartData] = useState(null);
@@ -19,7 +26,9 @@ export default function CloseRateBySector({ apiParams }) {
   useEffect(() => {
     fetchMetric("close-rate-by-sector", apiParams)
       .then((res) => {
-        const sorted = [...res.data].sort((a, b) => b.close_rate - a.close_rate);
+        const sorted = [...res.data].sort(
+          (a, b) => b.close_rate - a.close_rate,
+        );
         setChartData({
           labels: sorted.map((d) => d.sector),
           datasets: [

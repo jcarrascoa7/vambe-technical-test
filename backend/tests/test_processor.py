@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock
 
 import pytest
 from sqlalchemy import create_engine
@@ -109,7 +108,9 @@ class TestMarkCategorized:
 
         _mark_categorized(db, [])
 
-        uncategorized = db.query(Client).filter(Client.categorized == False).all()  # noqa: E712
+        uncategorized = (
+            db.query(Client).filter(Client.categorized == False).all()
+        )  # noqa: E712
         assert len(uncategorized) == 3
         db.close()
 
@@ -120,9 +121,13 @@ class TestMarkCategorized:
 
         _mark_categorized(db, target_ids)
 
-        categorized = db.query(Client).filter(Client.categorized == True).all()  # noqa: E712
+        categorized = (
+            db.query(Client).filter(Client.categorized == True).all()
+        )  # noqa: E712
         assert len(categorized) == 2
-        uncategorized = db.query(Client).filter(Client.categorized == False).all()  # noqa: E712
+        uncategorized = (
+            db.query(Client).filter(Client.categorized == False).all()
+        )  # noqa: E712
         assert len(uncategorized) == 3
         db.close()
 
@@ -172,16 +177,28 @@ async def test_process_batch_skips_failed_records():
         call_count += 1
         if call_count == 2:
             return None  # Simulate failure
-        return {"sector": "Health", "size": "Micro", "inquiry_volume": "Low",
-                "channel": "WhatsApp", "source": "LinkedIn", "integrations": "CRM",
-                "tone": "Professional", "usage_type": "Scheduling",
-                "pain": "High message volume", "concreteness": "Concrete/Actionable"}
+        return {
+            "sector": "Health",
+            "size": "Micro",
+            "inquiry_volume": "Low",
+            "channel": "WhatsApp",
+            "source": "LinkedIn",
+            "integrations": "CRM",
+            "tone": "Professional",
+            "usage_type": "Scheduling",
+            "pain": "High message volume",
+            "concreteness": "Concrete/Actionable",
+        }
 
     count = await process_batch(db, categorize_fn=mock_categorize_partial)
     assert count == 2
 
-    categorized = db.query(Client).filter(Client.categorized == True).all()  # noqa: E712
-    uncategorized = db.query(Client).filter(Client.categorized == False).all()  # noqa: E712
+    categorized = (
+        db.query(Client).filter(Client.categorized == True).all()
+    )  # noqa: E712
+    uncategorized = (
+        db.query(Client).filter(Client.categorized == False).all()
+    )  # noqa: E712
     assert len(categorized) == 2
     assert len(uncategorized) == 1
     db.close()
@@ -226,6 +243,7 @@ async def test_run_categorization_processes_all_records():
 
     # Patch SessionLocal to use test DB
     import backend.categorizer.processor as proc
+
     original_sl = proc.SessionLocal
     proc.SessionLocal = TestSession
     try:
@@ -265,6 +283,7 @@ async def test_run_categorization_resumes_on_restart():
         }
 
     import backend.categorizer.processor as proc
+
     original_sl = proc.SessionLocal
     proc.SessionLocal = TestSession
     try:
@@ -288,6 +307,7 @@ async def test_run_categorization_resumes_on_restart():
 async def test_run_categorization_empty_table():
     """No uncategorized records → no-op, no crash."""
     import backend.categorizer.processor as proc
+
     original_sl = proc.SessionLocal
     proc.SessionLocal = TestSession
     try:
@@ -323,6 +343,7 @@ async def test_run_categorization_respects_max_records():
         }
 
     import backend.categorizer.processor as proc
+
     original_sl = proc.SessionLocal
     proc.SessionLocal = TestSession
     try:
@@ -331,8 +352,10 @@ async def test_run_categorization_respects_max_records():
         proc.SessionLocal = original_sl
 
     db = TestSession()
-    categorized = db.query(Client).filter(Client.categorized == True).all()  # noqa: E712
-    uncategorized = db.query(Client).filter(Client.categorized == False).all()  # noqa: E712
+    categorized = (
+        db.query(Client).filter(Client.categorized == True).all()
+    )  # noqa: E712
+    _ = db.query(Client).filter(Client.categorized == False).all()  # noqa: E712
     # With batch_size=50, a single batch processes up to 50 records.
     # max_records=3 means we stop after first batch (which processed all 10, since 10 < 50).
     # The processor processes a full batch then checks max_records.

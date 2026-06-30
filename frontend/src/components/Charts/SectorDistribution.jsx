@@ -1,20 +1,28 @@
 import { useState, useEffect } from "react";
 import { Doughnut } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { fetchMetric } from "../../api/client";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const COLORS = [
-  "#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6",
-  "#ec4899", "#06b6d4", "#84cc16", "#f97316", "#6366f1",
-  "#14b8a6", "#e11d48", "#0ea5e9", "#a855f7", "#22c55e",
-  "#eab308", "#64748b",
+  "#3b82f6",
+  "#ef4444",
+  "#10b981",
+  "#f59e0b",
+  "#8b5cf6",
+  "#ec4899",
+  "#06b6d4",
+  "#84cc16",
+  "#f97316",
+  "#6366f1",
+  "#14b8a6",
+  "#e11d48",
+  "#0ea5e9",
+  "#a855f7",
+  "#22c55e",
+  "#eab308",
+  "#64748b",
 ];
 
 export default function SectorDistribution({ apiParams }) {

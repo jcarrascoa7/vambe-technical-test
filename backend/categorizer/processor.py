@@ -35,9 +35,7 @@ def _mark_categorized(db: Session, client_ids: list[int]) -> None:
     """Mark a list of client IDs as categorized."""
     if not client_ids:
         return
-    db.execute(
-        update(Client).where(Client.id.in_(client_ids)).values(categorized=True)
-    )
+    db.execute(update(Client).where(Client.id.in_(client_ids)).values(categorized=True))
     db.commit()
 
 
@@ -114,7 +112,9 @@ async def run_categorization(
             break
 
         processed += count
-        logger.info("Categorized %d records (total: %d/%d)", count, processed, max_records)
+        logger.info(
+            "Categorized %d records (total: %d/%d)", count, processed, max_records
+        )
 
         # Yield control to the event loop so API remains responsive
         await asyncio.sleep(0)

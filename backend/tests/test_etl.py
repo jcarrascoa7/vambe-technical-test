@@ -1,5 +1,4 @@
 import pandas as pd
-import pytest
 
 from backend.etl.cleaner import clean, read_csv
 
@@ -119,4 +118,4 @@ class TestClean:
     def test_closed_is_bool(self):
         df = self._make_df()
         result = clean(df)
-        assert result.iloc[0]["closed"] == True
+        assert result.iloc[0]["closed"] == True  # noqa: E712
