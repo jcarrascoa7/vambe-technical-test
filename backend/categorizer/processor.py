@@ -18,7 +18,7 @@ from backend.models import Client
 
 logger = logging.getLogger(__name__)
 
-BATCH_SIZE = 20
+BATCH_SIZE = 5
 
 
 def _get_uncategorized_batch(db: Session, batch_size: int) -> list[Client]:
@@ -37,6 +37,7 @@ def _mark_categorized(db: Session, client_ids: list[int]) -> None:
         return
     db.execute(update(Client).where(Client.id.in_(client_ids)).values(categorized=True))
     db.commit()
+    logger.info("Persisted %d categorized records to DB: %s", len(client_ids), client_ids)
 
 
 async def _categorize_client(client: Client) -> dict | None:
