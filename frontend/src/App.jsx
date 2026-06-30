@@ -8,6 +8,10 @@ import SectorDistribution from "./components/Charts/SectorDistribution";
 import PainDistribution from "./components/Charts/PainDistribution";
 import CloseRateBySource from "./components/Charts/CloseRateBySource";
 import CloseRateByConcreteness from "./components/Charts/CloseRateByConcreteness";
+import VendorSectorHeatmap from "./components/Charts/VendorSectorHeatmap";
+import TemporalEvolution from "./components/Charts/TemporalEvolution";
+import IntegrationsDistribution from "./components/Charts/IntegrationsDistribution";
+import VolumeCloseRateScatter from "./components/Charts/VolumeCloseRateScatter";
 import useFilters from "./hooks/useFilters";
 import { fetchClients, fetchStatus, fetchMetric } from "./api/client";
 
@@ -137,6 +141,10 @@ export default function App() {
           <PainDistribution apiParams={apiParams} />
           <CloseRateBySource apiParams={apiParams} />
           <CloseRateByConcreteness apiParams={apiParams} />
+          <VendorSectorHeatmap apiParams={apiParams} />
+          <TemporalEvolution apiParams={apiParams} />
+          <IntegrationsDistribution apiParams={apiParams} />
+          <VolumeCloseRateScatter apiParams={apiParams} />
         </div>
 
         <ClientTable

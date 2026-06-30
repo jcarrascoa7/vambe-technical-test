@@ -198,7 +198,7 @@
         "Bar chart shows close rate by language concreteness with highlighted gap",
         "Charts respond to filter changes"
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 12,
@@ -213,7 +213,7 @@
         "Scatter plot shows volume × close rate by sector with labeled points",
         "Charts respond to filter changes"
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 13,
