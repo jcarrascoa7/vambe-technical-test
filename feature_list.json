@@ -156,7 +156,7 @@
         "Filters are passed as query params to API endpoints",
         "App builds and runs without errors via docker compose up"
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 9,

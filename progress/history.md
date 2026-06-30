@@ -208,3 +208,34 @@ Append-only log of completed sessions.
 - backend/tests/test_api_metrics.py — new file (all endpoints + edge cases)
 
 **Tests**: All passing
+
+---
+
+## Session: 2026-06-30 — Feature 8: dashboard_filters
+
+**Status**: done
+**Plan**:
+1. Install Tailwind CSS in frontend
+2. Create api/client.js fetch wrapper
+3. Create hooks/useFilters.js custom hook
+4. Create components/Filters.jsx panel
+5. Update App.jsx to wire filters + basic layout
+6. Run ./init.sh to verify build
+
+**Key decisions**:
+- Tailwind CSS via @tailwindcss/vite plugin (zero config)
+- useFilters hook manages filter state and derives apiParams
+- Filters passed as query params to /clients endpoint
+- Memoized apiParams with useMemo to prevent infinite re-fetch loop
+- Basic table layout for client list with filter panel
+
+**Files modified**:
+- frontend/package.json — added tailwindcss, @tailwindcss/vite
+- frontend/vite.config.js — added tailwind plugin
+- frontend/src/index.css — @import "tailwindcss"
+- frontend/src/api/client.js — new file (fetch wrapper)
+- frontend/src/hooks/useFilters.js — new file (filter state + apiParams)
+- frontend/src/components/Filters.jsx — new file (filter panel UI)
+- frontend/src/App.jsx — wired filters, table, status
+
+**Tests**: ./init.sh green
