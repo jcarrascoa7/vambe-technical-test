@@ -6,10 +6,10 @@ class Settings(BaseSettings):
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"
     POSTGRES_DB: str = "vambe"
-    GEMMA_API_KEY: str = ""
-    GEMMA_API_URL: str = "https://generativelanguage.googleapis.com/v1beta/models"
-    GEMMA_MODEL: str = "gemma-4"
-    MAX_RECORDS_TO_CATEGORIZE: int = 1000
+    LLM_API_KEY: str = ""
+    LLM_API_URL: str = "https://token-plan-sgp.xiaomimimo.com/v1"
+    LLM_MODEL: str = "mimo-v2.5-pro"
+    MAX_RECORDS_TO_CATEGORIZE: int = 100
 
     class Config:
         env_file = ".env"

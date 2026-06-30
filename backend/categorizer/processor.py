@@ -9,7 +9,7 @@ from typing import Callable
 from sqlalchemy import update
 from sqlalchemy.orm import Session
 
-from backend.categorizer.gemma_client import call_gemma
+from backend.categorizer.llm_client import call_llm
 from backend.categorizer.prompts import build_categorization_prompt
 from backend.categorizer.validator import validate_response
 from backend.config import settings
@@ -18,7 +18,7 @@ from backend.models import Client
 
 logger = logging.getLogger(__name__)
 
-BATCH_SIZE = 50
+BATCH_SIZE = 20
 
 
 def _get_uncategorized_batch(db: Session, batch_size: int) -> list[Client]:
@@ -48,7 +48,7 @@ async def _categorize_client(client: Client) -> dict | None:
         return None
 
     prompt = build_categorization_prompt(client.transcription)
-    raw_response = await call_gemma(prompt)
+    raw_response = await call_llm(prompt)
 
     if not raw_response:
         return None

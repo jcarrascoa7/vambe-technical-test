@@ -3,7 +3,7 @@
 import asyncio
 import sys
 
-from backend.categorizer.gemma_client import call_gemma
+from backend.categorizer.llm_client import call_llm
 from backend.categorizer.prompts import build_categorization_prompt
 from backend.categorizer.validator import validate_response
 from backend.database import SessionLocal
@@ -12,7 +12,7 @@ from backend.models import Client
 
 async def categorize_one(transcription: str) -> dict | None:
     prompt = build_categorization_prompt(transcription)
-    raw = await call_gemma(prompt)
+    raw = await call_llm(prompt)
     if not raw:
         return None
     return validate_response(raw)

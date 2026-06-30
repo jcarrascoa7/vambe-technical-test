@@ -347,3 +347,36 @@ Append-only log of completed sessions.
 - `frontend/src/App.jsx` — imported and rendered all 4 advanced chart components in grid layout
 
 **Tests**: ./init.sh green
+
+---
+
+## Session: 2026-06-30 — Feature 13: ci_cd_pipeline
+
+**Status**: done
+**Plan**:
+1. Create .github/workflows/ci.yml with lint, Docker build, pytest, frontend build
+2. Create .github/workflows/deploy.yml placeholder for Railway
+3. Add eslint + prettier to frontend for CI linting
+4. Add ruff + black to backend requirements
+5. Run ./init.sh until green
+
+**Key decisions**:
+- Node.js copied from frontend-build stage in Dockerfile for CI frontend builds (~30MB overhead)
+- Ruff + Black run on GitHub Actions runner (fast, no Docker); tests run inside Docker (matches production)
+- ESLint + Prettier added as frontend devDeps with lint/format:check scripts
+- E712 ignored in ruff (SQLAlchemy `Column == True` is idiomatic)
+- E501 ignored in ruff (Black handles line length)
+- Deploy workflow: placeholder with echo; real Railway integration needs CLI or webhook
+- Fail-fast: each step sequential, any failure stops workflow
+
+**Files modified**:
+- `.github/workflows/ci.yml` — new: CI workflow
+- `.github/workflows/deploy.yml` — new: deploy placeholder
+- `Dockerfile` — added Node.js + npm to final stage
+- `frontend/package.json` — added eslint, prettier, scripts
+- `frontend/.eslintrc.cjs` — new: ESLint config
+- `backend/requirements.txt` — added ruff, black
+- `pyproject.toml` — new: ruff config
+- Multiple backend/frontend files — lint/format fixes
+
+**Tests**: 124/124 passing

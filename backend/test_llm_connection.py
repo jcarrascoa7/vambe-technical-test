@@ -1,19 +1,19 @@
-"""Quick smoke test for Gemma API connectivity. Run: python -m backend.test_llm_connection"""
+"""Quick smoke test for LLM API connectivity. Run: python -m backend.test_llm_connection"""
 
 import asyncio
 import sys
 
-from backend.categorizer.gemma_client import call_gemma
+from backend.categorizer.llm_client import call_llm
 
 
 async def main():
     prompt = 'Return ONLY this JSON: {"sector": "Health", "size": "Micro"}'
-    print("Calling Gemma API...")
-    result = await call_gemma(prompt, max_retries=1, timeout=15.0)
+    print("Calling LLM API...")
+    result = await call_llm(prompt, max_retries=1, timeout=15.0)
     if result:
         print(f"OK — Response:\n{result}")
     else:
-        print("FAIL — Empty response. Check GEMMA_API_KEY and GEMMA_API_URL in .env")
+        print("FAIL — Empty response. Check LLM_API_KEY and LLM_API_URL in .env")
         sys.exit(1)
 
 
