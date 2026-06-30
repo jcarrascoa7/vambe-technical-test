@@ -416,3 +416,38 @@ Append-only log of completed sessions.
 - `backend/test_categorization.py` — updated imports
 
 **Tests**: 125/125 passing
+
+---
+
+## Session: 2026-06-30 — Feature 14: chart_insights_llm
+
+**Status**: done
+**Plan**:
+1. Create backend/api/insights.py with GET /insights/{chart_type} endpoint using existing llm_client
+2. Write backend/tests/test_insights.py (success, LLM failure fallback, all chart types)
+3. Add fetchInsight to frontend/src/api/client.js
+4. Create frontend/src/components/ChartInsight.jsx (reusable with skeleton + text states)
+5. Integrate ChartInsight into each chart component in App.jsx
+6. Localize all frontend UI text to Spanish (title, KPIs, filters, table headers, buttons)
+7. Expand ClientTable to show all categorized dimensions + transcription
+8. Run ./init.sh until green
+
+**Key decisions**:
+- Used `call_llm` (OpenAI-compatible client) — `gemma_client.py` has a pre-existing bug referencing `settings.GEMMA_API_KEY` which doesn't exist in config
+- Prompt returns JSON with `text` field; if LLM returns plain text instead, it's used directly
+- ChartWithInsight wrapper in App.jsx renders chart + insight together — keeps chart components unchanged
+- Skeleton uses Tailwind `animate-pulse` (three gray bars), no custom CSS
+- Domain context per chart maps to "Decision it improves" and "Justification" from docs/domain.md
+
+**Files modified**:
+- `backend/api/insights.py` — new: GET /insights/{chart_type} endpoint
+- `backend/main.py` — registered insights_router
+- `backend/tests/test_insights.py` — new: 9 tests (success, fallbacks, chart types)
+- `frontend/src/api/client.js` — added fetchInsight(chartType)
+- `frontend/src/components/ChartInsight.jsx` — new: reusable skeleton + text component
+- `frontend/src/App.jsx` — title localized, ChartWithInsight wrapper, CategorizationProgress in Spanish
+- `frontend/src/components/KPICards.jsx` — labels localized to Spanish
+- `frontend/src/components/Filters.jsx` — labels localized to Spanish
+- `frontend/src/components/ClientTable.jsx` — expanded with all dimensions + transcription, localized
+
+**Tests**: 134/134 passing (125 existing + 9 new insight tests)
