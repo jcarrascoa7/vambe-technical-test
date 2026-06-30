@@ -265,11 +265,15 @@
         "ETL + categorization run automatically on first startup",
         "Dashboard shows real data with working charts and filters",
         "All pytest tests pass: docker compose exec app pytest backend/tests/ -v",
-        "README.md contains: project description, local setup instructions (docker compose up --build), architecture overview, key design decisions and trade-offs",
         "README.md should be written in Spanish",
+        "README.md > Instrucciones para ejecutar la aplicación de forma local con Docker (docker compose up --build, puertos, primer arranque)",
+        "README.md > Documentación básica: arquitectura del sistema (backend, frontend, DB, LLM), breve descripción de funcionalidades (ETL, categorización, dashboard), stack utilizado (FastAPI, React, PostgreSQL, Chart.js, etc.), cómo configurar la API_KEY y variables del LLM compatible con OpenAI (LLM_API_URL, LLM_MODEL, LLM_API_KEY)",
+        "README.md > Decisiones clave: dimensiones descartadas del análisis y por qué, técnicas usadas para garantizar consistencia de respuestas del LLM (prompts estructurados, few-shot, validación), por qué se eligió el stack utilizado",
+        "README.md > Link al repositorio de Git con el código fuente",
+        "README.md > Link a la app desplegada en Render (placeholder hasta deploy)",
         "No debug print() statements, no TODOs without context, no temp files"
       ],
-      "status": "pending"
+      "status": "done"
     }
   ]
 }
