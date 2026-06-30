@@ -60,7 +60,7 @@ export default function IntegrationsDistribution({ apiParams }) {
   return (
     <div className="bg-white rounded-lg shadow p-4">
       <h3 className="text-sm font-semibold text-gray-700 mb-3">
-        Top Requested Integrations
+        Integraciones Más Solicitadas
       </h3>
       <Bar
         data={chartData}
@@ -80,7 +80,7 @@ export default function IntegrationsDistribution({ apiParams }) {
 function ChartPlaceholder() {
   return (
     <div className="bg-white rounded-lg shadow p-4 h-64 flex items-center justify-center">
-      <p className="text-gray-400 text-sm">Loading chart...</p>
+      <p className="text-gray-400 text-sm">Cargando gráfico...</p>
     </div>
   );
 }

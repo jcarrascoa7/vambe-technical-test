@@ -31,9 +31,9 @@ export default function ClientTable({
     <div className="bg-white rounded-lg shadow p-4">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-          Clients ({total})
+          Clientes ({total})
         </h2>
-        {loading && <span className="text-xs text-gray-400">Loading...</span>}
+        {loading && <span className="text-xs text-gray-400">Cargando...</span>}
       </div>
 
       <form onSubmit={handleSearch} className="flex gap-2 mb-4">
@@ -41,14 +41,14 @@ export default function ClientTable({
           type="text"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          placeholder="Search by name or email..."
+          placeholder="Buscar por nombre o email..."
           className="flex-1 text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
         <button
           type="submit"
           className="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          Search
+          Buscar
         </button>
         {searchInput && (
           <button
@@ -56,14 +56,14 @@ export default function ClientTable({
             onClick={handleClear}
             className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200"
           >
-            Clear
+            Limpiar
           </button>
         )}
       </form>
 
       {clients.length === 0 ? (
         <p className="text-gray-400 text-sm py-8 text-center">
-          No clients match the current filters.
+          No hay clientes que coincidan con los filtros actuales.
         </p>
       ) : (
         <>
@@ -71,23 +71,50 @@ export default function ClientTable({
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="text-left py-2 px-3 font-medium text-gray-500">
-                    Name
+                  <th className="text-left py-2 px-3 font-medium text-gray-500 whitespace-nowrap">
+                    Nombre
                   </th>
-                  <th className="text-left py-2 px-3 font-medium text-gray-500">
+                  <th className="text-left py-2 px-3 font-medium text-gray-500 whitespace-nowrap">
                     Email
                   </th>
-                  <th className="text-left py-2 px-3 font-medium text-gray-500">
+                  <th className="text-left py-2 px-3 font-medium text-gray-500 whitespace-nowrap">
                     Sector
                   </th>
-                  <th className="text-left py-2 px-3 font-medium text-gray-500">
-                    Vendor
+                  <th className="text-left py-2 px-3 font-medium text-gray-500 whitespace-nowrap">
+                    Tamaño
                   </th>
-                  <th className="text-left py-2 px-3 font-medium text-gray-500">
-                    Channel
+                  <th className="text-left py-2 px-3 font-medium text-gray-500 whitespace-nowrap">
+                    Volumen
                   </th>
-                  <th className="text-left py-2 px-3 font-medium text-gray-500">
-                    Closed
+                  <th className="text-left py-2 px-3 font-medium text-gray-500 whitespace-nowrap">
+                    Canal
+                  </th>
+                  <th className="text-left py-2 px-3 font-medium text-gray-500 whitespace-nowrap">
+                    Fuente
+                  </th>
+                  <th className="text-left py-2 px-3 font-medium text-gray-500 whitespace-nowrap">
+                    Integraciones
+                  </th>
+                  <th className="text-left py-2 px-3 font-medium text-gray-500 whitespace-nowrap">
+                    Tono
+                  </th>
+                  <th className="text-left py-2 px-3 font-medium text-gray-500 whitespace-nowrap">
+                    Uso
+                  </th>
+                  <th className="text-left py-2 px-3 font-medium text-gray-500 whitespace-nowrap">
+                    Dolor
+                  </th>
+                  <th className="text-left py-2 px-3 font-medium text-gray-500 whitespace-nowrap">
+                    Concreción
+                  </th>
+                  <th className="text-left py-2 px-3 font-medium text-gray-500 whitespace-nowrap">
+                    Vendedor
+                  </th>
+                  <th className="text-left py-2 px-3 font-medium text-gray-500 whitespace-nowrap">
+                    Cerrado
+                  </th>
+                  <th className="text-left py-2 px-3 font-medium text-gray-500 whitespace-nowrap">
+                    Transcripción
                   </th>
                 </tr>
               </thead>
@@ -97,11 +124,26 @@ export default function ClientTable({
                     key={c.id}
                     className="border-b border-gray-100 hover:bg-gray-50"
                   >
-                    <td className="py-2 px-3">{c.name}</td>
-                    <td className="py-2 px-3 text-gray-500">{c.email}</td>
+                    <td className="py-2 px-3 whitespace-nowrap">{c.name}</td>
+                    <td className="py-2 px-3 text-gray-500 whitespace-nowrap">
+                      {c.email}
+                    </td>
                     <td className="py-2 px-3">{c.sector || "—"}</td>
-                    <td className="py-2 px-3">{c.vendor || "—"}</td>
+                    <td className="py-2 px-3">{c.size || "—"}</td>
+                    <td className="py-2 px-3">{c.inquiry_volume || "—"}</td>
                     <td className="py-2 px-3">{c.channel || "—"}</td>
+                    <td className="py-2 px-3">{c.source || "—"}</td>
+                    <td
+                      className="py-2 px-3 max-w-[120px] truncate"
+                      title={c.integrations || ""}
+                    >
+                      {c.integrations || "—"}
+                    </td>
+                    <td className="py-2 px-3">{c.tone || "—"}</td>
+                    <td className="py-2 px-3">{c.usage_type || "—"}</td>
+                    <td className="py-2 px-3">{c.pain || "—"}</td>
+                    <td className="py-2 px-3">{c.concreteness || "—"}</td>
+                    <td className="py-2 px-3">{c.vendor || "—"}</td>
                     <td className="py-2 px-3">
                       <span
                         className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -110,8 +152,16 @@ export default function ClientTable({
                             : "bg-red-100 text-red-800"
                         }`}
                       >
-                        {c.closed ? "Yes" : "No"}
+                        {c.closed ? "Sí" : "No"}
                       </span>
+                    </td>
+                    <td className="py-2 px-3 max-w-[200px]">
+                      <p
+                        className="text-xs text-gray-500 line-clamp-2"
+                        title={c.transcription || ""}
+                      >
+                        {c.transcription || "—"}
+                      </p>
                     </td>
                   </tr>
                 ))}
@@ -126,17 +176,17 @@ export default function ClientTable({
                 disabled={offset === 0}
                 className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Previous
+                Anterior
               </button>
               <span className="text-sm text-gray-500">
-                Page {currentPage} of {totalPages}
+                Página {currentPage} de {totalPages}
               </span>
               <button
                 onClick={() => onPaginate(offset + limit)}
                 disabled={offset + limit >= total}
                 className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Next
+                Siguiente
               </button>
             </div>
           )}

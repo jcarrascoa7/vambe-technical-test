@@ -39,7 +39,7 @@ export default function VendorSectorHeatmap({ apiParams }) {
   return (
     <div className="bg-white rounded-lg shadow p-4 overflow-x-auto">
       <h3 className="text-sm font-semibold text-gray-700 mb-3">
-        Vendor × Sector Close Rate
+        Tasa de Cierre Vendedor × Sector
       </h3>
       <table className="w-full text-xs border-collapse">
         <thead>
@@ -91,7 +91,7 @@ export default function VendorSectorHeatmap({ apiParams }) {
         </tbody>
       </table>
       <div className="flex items-center gap-1 mt-3 text-[10px] text-gray-400">
-        <span>Low</span>
+        <span>Bajo</span>
         {RATE_COLORS.map((c) => (
           <span
             key={c.bg}
@@ -99,7 +99,7 @@ export default function VendorSectorHeatmap({ apiParams }) {
             style={{ backgroundColor: c.bg }}
           />
         ))}
-        <span>High</span>
+        <span>Alto</span>
       </div>
     </div>
   );
@@ -108,7 +108,7 @@ export default function VendorSectorHeatmap({ apiParams }) {
 function ChartPlaceholder() {
   return (
     <div className="bg-white rounded-lg shadow p-4 h-64 flex items-center justify-center">
-      <p className="text-gray-400 text-sm">Loading chart...</p>
+      <p className="text-gray-400 text-sm">Cargando gráfico...</p>
     </div>
   );
 }
