@@ -1,0 +1,16 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Railway
+        run: |
+          echo "Deploy step placeholder — configure Railway CLI or webhook when ready."
+          echo "See https://docs.railway.app for setup instructions."
