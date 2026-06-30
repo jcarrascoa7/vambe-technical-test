@@ -116,7 +116,7 @@
         "backend/tests/test_schemas.py covers: valid data serialization, missing fields, type coercion",
         "backend/tests/test_api_clients.py covers: no filters, single filter, combined filters, search, empty results, pagination"
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 7,

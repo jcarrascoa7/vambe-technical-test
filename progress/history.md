@@ -153,3 +153,33 @@ Append-only log of completed sessions.
 - `backend/tests/test_processor.py` — new file (4 tests)
 
 **Tests**: 52/52 passing
+
+---
+
+## Session: 2026-06-30 — Feature 6: api_clients_endpoints
+
+**Status**: done
+**Plan**:
+1. Create backend/api/schemas.py with Pydantic v2 response schemas
+2. Create backend/api/routes/clients.py with GET /clients endpoint
+3. Register the router in backend/main.py
+4. Write backend/tests/test_schemas.py for schema validation
+5. Write backend/tests/test_api_clients.py for endpoint tests
+
+**Key decisions**:
+- Used Pydantic v2 with model_config for ORM mode serialization
+- Implemented filter logic with SQLAlchemy dynamic query building
+- Search across name and email using ilike for case-insensitive matching
+- Pagination via limit/offset with total count in response
+- Status endpoint returns categorization progress metrics
+
+**Files modified**:
+- backend/api/schemas.py — new file (Pydantic v2 schemas)
+- backend/api/routes/clients.py — new file (GET /clients with filters, search, pagination)
+- backend/api/__init__.py — new file (package init)
+- backend/api/routes/__init__.py — new file (package init)
+- backend/main.py — registered clients router
+- backend/tests/test_schemas.py — new file (schema validation tests)
+- backend/tests/test_api_clients.py — new file (endpoint tests)
+
+**Tests**: All passing
