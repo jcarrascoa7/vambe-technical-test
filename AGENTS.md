@@ -89,7 +89,7 @@ Before ending:
 | `POSTGRES_PASSWORD` | PostgreSQL password (must match `DATABASE_URL`) | `postgres` |
 | `POSTGRES_DB` | PostgreSQL database name (must match `DATABASE_URL`) | `vambe` |
 | `GEMMA_API_KEY` | API key for Gemma 4 (Google AI Studio) | `your_api_key_here` |
-| `GEMMA_API_URL` | Gemma 4 API endpoint | `https://generativelanguage.googleapis.com/v1beta/models/gemma-4:generateContent` |
+| `GEMMA_API_URL` | Gemma 4 API endpoint | `https://generativelanguage.googleapis.com/v1beta/models/gemma-4-26b-a4b-it:generateContent` |
 | `MAX_RECORDS_TO_CATEGORIZE` | Max records the categorizer processes (1000 for demo, 10000 for full) | `1000` |
 
 ### Notes
