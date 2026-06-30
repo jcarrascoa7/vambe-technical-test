@@ -22,7 +22,7 @@ def _build_payload(prompt: str) -> dict[str, Any]:
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
             "temperature": 0,
-            "maxOutputTokens": 1024,
+            "maxOutputTokens": 4096,
             "responseMimeType": "application/json",
         },
     }
@@ -32,7 +32,7 @@ async def call_gemma(
     prompt: str,
     *,
     max_retries: int = 3,
-    timeout: float = 30.0,
+    timeout: float = 90.0,
 ) -> str:
     """Call the Gemma 4 API with a prompt and return the response text.
 
@@ -50,13 +50,16 @@ async def call_gemma(
         The response text from the API, or empty string on failure.
     """
     api_key = settings.GEMMA_API_KEY
-    api_url = settings.GEMMA_API_URL
 
     if not api_key:
         logger.error("GEMMA_API_KEY is not set")
         return ""
 
-    url = f"{api_url}?key={api_key}"
+    # Support both old format (full URL with model) and new format (base URL + model)
+    if settings.GEMMA_API_URL.endswith(":generateContent"):
+        url = f"{settings.GEMMA_API_URL}?key={api_key}"
+    else:
+        url = f"{settings.GEMMA_API_URL}/{settings.GEMMA_MODEL}:generateContent?key={api_key}"
     payload = _build_payload(prompt)
 
     for attempt in range(max_retries):
@@ -110,7 +113,7 @@ async def call_gemma(
             logger.error("Malformed response from Gemma API")
             return ""
 
-        # Extract text from response
+        # Extract text from response (skip thinking parts)
         try:
             candidates = data.get("candidates", [])
             if not candidates:
@@ -123,7 +126,11 @@ async def call_gemma(
                 logger.warning("Gemma API returned empty parts")
                 return ""
 
-            return parts[0].get("text", "")
+            for part in parts:
+                if not part.get("thought", False):
+                    return part.get("text", "")
+
+            return parts[-1].get("text", "")
 
         except (KeyError, IndexError, TypeError):
             logger.error("Unexpected Gemma API response structure")

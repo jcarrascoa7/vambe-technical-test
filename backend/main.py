@@ -1,9 +1,11 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import func
 
+from backend.categorizer.processor import run_categorization
 from backend.database import Base, SessionLocal, engine
 from backend.etl.cleaner import clean, read_csv
 from backend.etl.loader import load
@@ -28,15 +30,36 @@ def run_etl() -> None:
         db.close()
 
 
+def _has_uncategorized_records() -> bool:
+    """Check if there are uncategorized records."""
+    db = SessionLocal()
+    try:
+        count = (
+            db.query(func.count(Client.id))
+            .filter(Client.categorized == False)  # noqa: E712
+            .scalar()
+        )
+        return count > 0
+    finally:
+        db.close()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup/shutdown logic."""
     run_etl()
+
+    task = None
+    if _has_uncategorized_records():
+        task = asyncio.create_task(run_categorization())
+
     yield
+
+    if task and not task.done():
+        task.cancel()
 
 
 app = FastAPI(title="Vambe Dashboard", version="0.1.0", lifespan=lifespan)
-
 
 @app.get("/health")
 def health():

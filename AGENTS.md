@@ -14,6 +14,36 @@
 2. Read `progress/current.md` to understand where the last session left off.
 3. Read `feature_list.json` and pick **one** task with status `pending` whose `depends_on` are all `done`. Do NOT work on more than one task at a time.
 
+## 1b. Full Orchestration Flow (leader protocol)
+
+When running the `implement-next-feature` command, the leader MUST follow this exact sequence and **stop after each feature**. Never chain features automatically.
+
+```
+1. Run ./init.sh — if it fails, stop and report.
+2. Read progress/current.md — if active session or blocker exists, report and stop.
+3. Read feature_list.json — find first pending feature with all deps done. If none, report and stop.
+4. Launch implementer subagent to implement the feature.
+5. Wait for implementer to finish.
+   - If blocked: launch implementer to mark blocked and close session, report to user, STOP.
+   - If done: continue to step 6.
+6. Launch reviewer subagent to review the feature.
+7. Wait for reviewer to finish.
+   - If CHANGES_REQUESTED: report to user, STOP (do NOT fix without approval).
+   - If APPROVED: continue to step 8.
+8. Launch pr-agent subagent to create branch, commit, and PR.
+9. Wait for pr-agent to finish.
+   - If blocked: report to user, STOP.
+   - If PR created: continue to step 10.
+10. Close the session:
+    - Mark feature status as "done" in feature_list.json.
+    - Move summary from progress/current.md to end of progress/history.md.
+    - Empty progress/current.md leaving only the template.
+    - Run ./init.sh one final time to verify clean state.
+11. Report to user: feature done, PR URL, STOP.
+```
+
+**CRITICAL**: After step 11, do NOT pick or start the next feature. Wait for the user to run the command again.
+
 ## 2. Repository Map
 
 | File / Folder | What It Contains | When to Read It |
@@ -70,6 +100,8 @@ Before ending:
 4. Empty `progress/current.md` leaving only the template.
 5. Do not leave temp files, debug `print()` statements, or TODOs without context.
 
+**Orchestration note**: When using the `implement-next-feature` command, the leader handles steps 2-5 automatically after the pr-agent creates the PR. The leader then STOPS and waits for the user to run the command again.
+
 ## 6. If You Get Stuck
 
 - Re-read the relevant section in `docs/`.
@@ -88,8 +120,9 @@ Before ending:
 | `POSTGRES_USER` | PostgreSQL username (must match `DATABASE_URL`) | `postgres` |
 | `POSTGRES_PASSWORD` | PostgreSQL password (must match `DATABASE_URL`) | `postgres` |
 | `POSTGRES_DB` | PostgreSQL database name (must match `DATABASE_URL`) | `vambe` |
-| `GEMMA_API_KEY` | API key for Gemma 4 (Google AI Studio) | `your_api_key_here` |
-| `GEMMA_API_URL` | Gemma 4 API endpoint | `https://generativelanguage.googleapis.com/v1beta/models/gemma-4-26b-a4b-it:generateContent` |
+| `GEMMA_API_KEY` | API key for LLM (Google AI Studio) | `your_api_key_here` |
+| `GEMMA_API_URL` | LLM API base URL | `https://generativelanguage.googleapis.com/v1beta/models` |
+| `GEMMA_MODEL` | LLM model name | `gemma-4` |
 | `MAX_RECORDS_TO_CATEGORIZE` | Max records the categorizer processes (1000 for demo, 10000 for full) | `1000` |
 
 ### Notes
