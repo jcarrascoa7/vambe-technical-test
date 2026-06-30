@@ -123,10 +123,23 @@ def close_rate_by_vendor_sector(
 
 
 @router.get("/close-rate-by-source", response_model=MetricResponse)
-def close_rate_by_source(db: Session = Depends(get_db)):
+def close_rate_by_source(
+    sector: Optional[str] = None,
+    size: Optional[str] = None,
+    volume: Optional[str] = None,
+    source: Optional[str] = None,
+    channel: Optional[str] = None,
+    vendor: Optional[str] = None,
+    closed: Optional[bool] = None,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
+    db: Session = Depends(get_db),
+):
     """Close rate per acquisition source."""
+    query = _categorized_only(db)
+    query = _apply_filters(query, sector, size, volume, source, channel, vendor, closed, date_from, date_to)
     rows = (
-        _categorized_only(db)
+        query
         .filter(Client.source != NOT_SPECIFIED, Client.source.isnot(None))
         .with_entities(
             Client.source,
@@ -149,10 +162,23 @@ def close_rate_by_source(db: Session = Depends(get_db)):
 
 
 @router.get("/pain-distribution-by-sector", response_model=MetricResponse)
-def pain_distribution_by_sector(db: Session = Depends(get_db)):
+def pain_distribution_by_sector(
+    sector: Optional[str] = None,
+    size: Optional[str] = None,
+    volume: Optional[str] = None,
+    source: Optional[str] = None,
+    channel: Optional[str] = None,
+    vendor: Optional[str] = None,
+    closed: Optional[bool] = None,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
+    db: Session = Depends(get_db),
+):
     """Count of each pain category per sector."""
+    query = _categorized_only(db)
+    query = _apply_filters(query, sector, size, volume, source, channel, vendor, closed, date_from, date_to)
     rows = (
-        _categorized_only(db)
+        query
         .filter(
             Client.pain != NOT_SPECIFIED,
             Client.pain.isnot(None),
@@ -175,10 +201,23 @@ def pain_distribution_by_sector(db: Session = Depends(get_db)):
 
 
 @router.get("/close-rate-by-concreteness", response_model=MetricResponse)
-def close_rate_by_concreteness(db: Session = Depends(get_db)):
+def close_rate_by_concreteness(
+    sector: Optional[str] = None,
+    size: Optional[str] = None,
+    volume: Optional[str] = None,
+    source: Optional[str] = None,
+    channel: Optional[str] = None,
+    vendor: Optional[str] = None,
+    closed: Optional[bool] = None,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
+    db: Session = Depends(get_db),
+):
     """Close rate per language concreteness level."""
+    query = _categorized_only(db)
+    query = _apply_filters(query, sector, size, volume, source, channel, vendor, closed, date_from, date_to)
     rows = (
-        _categorized_only(db)
+        query
         .filter(Client.concreteness != NOT_SPECIFIED, Client.concreteness.isnot(None))
         .with_entities(
             Client.concreteness,
@@ -201,10 +240,23 @@ def close_rate_by_concreteness(db: Session = Depends(get_db)):
 
 
 @router.get("/sector-distribution", response_model=MetricResponse)
-def sector_distribution(db: Session = Depends(get_db)):
+def sector_distribution(
+    sector: Optional[str] = None,
+    size: Optional[str] = None,
+    volume: Optional[str] = None,
+    source: Optional[str] = None,
+    channel: Optional[str] = None,
+    vendor: Optional[str] = None,
+    closed: Optional[bool] = None,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
+    db: Session = Depends(get_db),
+):
     """Count by sector / total."""
+    query = _categorized_only(db)
+    query = _apply_filters(query, sector, size, volume, source, channel, vendor, closed, date_from, date_to)
     rows = (
-        _categorized_only(db)
+        query
         .filter(Client.sector != NOT_SPECIFIED, Client.sector.isnot(None))
         .with_entities(
             Client.sector,

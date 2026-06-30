@@ -136,6 +136,16 @@ class TestCloseRateBySource:
         assert sources["LinkedIn"]["close_rate"] == 0.5
         assert sources["Google"]["close_rate"] == 1.0
 
+    def test_accepts_filter_params(self, client, db):
+        _seed(db, source="LinkedIn", sector="Retail", closed=True)
+        _seed(db, source="Google", sector="Health", closed=True, email="g@e.com")
+        resp = client.get("/metrics/close-rate-by-source", params={"sector": "Retail"})
+        assert resp.status_code == 200
+        data = resp.json()
+        sources = {r["source"]: r for r in data["data"]}
+        assert "LinkedIn" in sources
+        assert "Google" not in sources
+
 
 class TestPainDistributionBySector:
     def test_returns_pain_counts(self, client, db):
@@ -152,6 +162,16 @@ class TestPainDistributionBySector:
         assert entries[("Retail", "Slow response")] == 1
         assert entries[("Health", "Lost leads/follow-up")] == 1
 
+    def test_accepts_filter_params(self, client, db):
+        _seed(db, sector="Retail", pain="High message volume", vendor="Toro")
+        _seed(db, sector="Health", pain="Slow response", vendor="Puma", email="h@e.com")
+        resp = client.get("/metrics/pain-distribution-by-sector", params={"vendor": "Toro"})
+        assert resp.status_code == 200
+        data = resp.json()
+        sectors = [r["sector"] for r in data["data"]]
+        assert "Retail" in sectors
+        assert "Health" not in sectors
+
 
 class TestCloseRateByConcreteness:
     def test_returns_close_rate(self, client, db):
@@ -164,6 +184,16 @@ class TestCloseRateByConcreteness:
         levels = {r["concreteness"]: r for r in data["data"]}
         assert levels["Concrete"]["close_rate"] == 1.0
         assert levels["Tentative"]["close_rate"] == 0.0
+
+    def test_accepts_filter_params(self, client, db):
+        _seed(db, concreteness="Concrete", sector="Retail", closed=True)
+        _seed(db, concreteness="Tentative", sector="Health", closed=False, email="t@e.com")
+        resp = client.get("/metrics/close-rate-by-concreteness", params={"sector": "Retail"})
+        assert resp.status_code == 200
+        data = resp.json()
+        levels = {r["concreteness"]: r for r in data["data"]}
+        assert "Concrete" in levels
+        assert "Tentative" not in levels
 
 
 class TestSectorDistribution:
@@ -178,6 +208,16 @@ class TestSectorDistribution:
         assert sectors["Retail"]["percentage"] == 0.75
         assert sectors["Health"]["count"] == 1
         assert sectors["Health"]["percentage"] == 0.25
+
+    def test_accepts_filter_params(self, client, db):
+        _seed(db, sector="Retail", vendor="Toro")
+        _seed(db, sector="Health", vendor="Puma", email="h@e.com")
+        resp = client.get("/metrics/sector-distribution", params={"vendor": "Toro"})
+        assert resp.status_code == 200
+        data = resp.json()
+        sectors = {r["sector"]: r for r in data["data"]}
+        assert "Retail" in sectors
+        assert "Health" not in sectors
 
 
 class TestAvgVolumeBySector:

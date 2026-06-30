@@ -3,6 +3,11 @@ import "./index.css";
 import Filters from "./components/Filters";
 import KPICards from "./components/KPICards";
 import ClientTable from "./components/ClientTable";
+import CloseRateBySector from "./components/Charts/CloseRateBySector";
+import SectorDistribution from "./components/Charts/SectorDistribution";
+import PainDistribution from "./components/Charts/PainDistribution";
+import CloseRateBySource from "./components/Charts/CloseRateBySource";
+import CloseRateByConcreteness from "./components/Charts/CloseRateByConcreteness";
 import useFilters from "./hooks/useFilters";
 import { fetchClients, fetchStatus, fetchMetric } from "./api/client";
 
@@ -125,6 +130,14 @@ export default function App() {
           topSector={kpis.topSector}
           topVendor={kpis.topVendor}
         />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <CloseRateBySector apiParams={apiParams} />
+          <SectorDistribution apiParams={apiParams} />
+          <PainDistribution apiParams={apiParams} />
+          <CloseRateBySource apiParams={apiParams} />
+          <CloseRateByConcreteness apiParams={apiParams} />
+        </div>
 
         <ClientTable
           clients={clients}
