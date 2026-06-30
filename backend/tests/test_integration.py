@@ -13,9 +13,9 @@ class TestNoDebugPrints:
         for node in ast.walk(tree):
             if isinstance(node, ast.Call):
                 if isinstance(node.func, ast.Name) and node.func.id == "print":
-                    assert False, (
-                        f"Debug print() found in {module.__name__} at line {node.lineno}"
-                    )
+                    assert (
+                        False
+                    ), f"Debug print() found in {module.__name__} at line {node.lineno}"
 
     def test_no_print_in_main(self):
         from backend import main
