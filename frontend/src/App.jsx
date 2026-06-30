@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import "./index.css";
 import Filters from "./components/Filters";
+import KPICards from "./components/KPICards";
 import useFilters from "./hooks/useFilters";
-import { fetchClients, fetchStatus } from "./api/client";
+import { fetchClients, fetchStatus, fetchMetric } from "./api/client";
 
 export default function App() {
   const { filters, setFilter, resetFilters, apiParams } = useFilters();
@@ -10,6 +11,7 @@ export default function App() {
   const [total, setTotal] = useState(0);
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [kpis, setKpis] = useState({ closeRate: 0, topSector: "", topVendor: "" });
 
   const loadClients = useCallback(async () => {
     setLoading(true);
@@ -25,9 +27,55 @@ export default function App() {
     }
   }, [apiParams]);
 
+  const loadKpis = useCallback(async () => {
+    try {
+      const [sectorData, vendorData] = await Promise.all([
+        fetchMetric("close-rate-by-sector", apiParams),
+        fetchMetric("close-rate-by-vendor-sector", apiParams),
+      ]);
+
+      // Overall close rate
+      let totalClosed = 0;
+      let totalAll = 0;
+      let bestSector = "";
+      let bestSectorRate = -1;
+      for (const row of sectorData.data) {
+        totalClosed += row.closed_count;
+        totalAll += row.total;
+        if (row.close_rate > bestSectorRate) {
+          bestSectorRate = row.close_rate;
+          bestSector = row.sector;
+        }
+      }
+      const closeRate = totalAll > 0 ? ((totalClosed / totalAll) * 100).toFixed(1) : "0";
+
+      // Top vendor: aggregate close rate per vendor
+      const vendorMap = {};
+      for (const row of vendorData.data) {
+        if (!vendorMap[row.vendor]) vendorMap[row.vendor] = { closed: 0, total: 0 };
+        vendorMap[row.vendor].closed += row.closed_count;
+        vendorMap[row.vendor].total += row.total;
+      }
+      let bestVendor = "";
+      let bestVendorRate = -1;
+      for (const [vendor, agg] of Object.entries(vendorMap)) {
+        const rate = agg.total > 0 ? agg.closed / agg.total : 0;
+        if (rate > bestVendorRate) {
+          bestVendorRate = rate;
+          bestVendor = vendor;
+        }
+      }
+
+      setKpis({ closeRate, topSector: bestSector, topVendor: bestVendor });
+    } catch {
+      setKpis({ closeRate: 0, topSector: "", topVendor: "" });
+    }
+  }, [apiParams]);
+
   useEffect(() => {
     loadClients();
-  }, [loadClients]);
+    loadKpis();
+  }, [loadClients, loadKpis]);
 
   useEffect(() => {
     fetchStatus().then(setStatus).catch(() => {});
@@ -53,6 +101,13 @@ export default function App() {
           filters={filters}
           setFilter={setFilter}
           resetFilters={resetFilters}
+        />
+
+        <KPICards
+          total={total}
+          closeRate={kpis.closeRate}
+          topSector={kpis.topSector}
+          topVendor={kpis.topVendor}
         />
 
         <div className="bg-white rounded-lg shadow p-4">

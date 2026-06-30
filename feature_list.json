@@ -169,7 +169,7 @@
         "KPI cards update when filters change",
         "App builds and runs without errors via docker compose up"
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 10,

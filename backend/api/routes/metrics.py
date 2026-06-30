@@ -1,3 +1,6 @@
+from datetime import date
+from typing import Optional
+
 from fastapi import APIRouter, Depends
 from sqlalchemy import case, func
 from sqlalchemy.orm import Session
@@ -16,11 +19,47 @@ def _categorized_only(db: Session):
     return db.query(Client).filter(Client.categorized == True)  # noqa: E712
 
 
+def _apply_filters(query, sector, size, volume, source, channel, vendor, closed, date_from, date_to):
+    """Apply optional filters to a query."""
+    if sector is not None:
+        query = query.filter(Client.sector == sector)
+    if size is not None:
+        query = query.filter(Client.size == size)
+    if volume is not None:
+        query = query.filter(Client.inquiry_volume == volume)
+    if source is not None:
+        query = query.filter(Client.source == source)
+    if channel is not None:
+        query = query.filter(Client.channel == channel)
+    if vendor is not None:
+        query = query.filter(Client.vendor == vendor)
+    if closed is not None:
+        query = query.filter(Client.closed == closed)
+    if date_from is not None:
+        query = query.filter(Client.meeting_date >= date_from)
+    if date_to is not None:
+        query = query.filter(Client.meeting_date <= date_to)
+    return query
+
+
 @router.get("/close-rate-by-sector", response_model=MetricResponse)
-def close_rate_by_sector(db: Session = Depends(get_db)):
+def close_rate_by_sector(
+    sector: Optional[str] = None,
+    size: Optional[str] = None,
+    volume: Optional[str] = None,
+    source: Optional[str] = None,
+    channel: Optional[str] = None,
+    vendor: Optional[str] = None,
+    closed: Optional[bool] = None,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
+    db: Session = Depends(get_db),
+):
     """Close rate per sector (closed=1 by sector / total by sector)."""
+    query = _categorized_only(db)
+    query = _apply_filters(query, sector, size, volume, source, channel, vendor, closed, date_from, date_to)
     rows = (
-        _categorized_only(db)
+        query
         .filter(Client.sector != NOT_SPECIFIED, Client.sector.isnot(None))
         .with_entities(
             Client.sector,
@@ -43,10 +82,23 @@ def close_rate_by_sector(db: Session = Depends(get_db)):
 
 
 @router.get("/close-rate-by-vendor-sector", response_model=MetricResponse)
-def close_rate_by_vendor_sector(db: Session = Depends(get_db)):
+def close_rate_by_vendor_sector(
+    sector: Optional[str] = None,
+    size: Optional[str] = None,
+    volume: Optional[str] = None,
+    source: Optional[str] = None,
+    channel: Optional[str] = None,
+    vendor: Optional[str] = None,
+    closed: Optional[bool] = None,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
+    db: Session = Depends(get_db),
+):
     """Heatmap-ready data: close rate by (vendor, sector)."""
+    query = _categorized_only(db)
+    query = _apply_filters(query, sector, size, volume, source, channel, vendor, closed, date_from, date_to)
     rows = (
-        _categorized_only(db)
+        query
         .filter(Client.sector != NOT_SPECIFIED, Client.sector.isnot(None))
         .with_entities(
             Client.vendor,
