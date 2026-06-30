@@ -10,7 +10,7 @@ WORKDIR /app
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ ./backend/
-COPY --from=frontend-build /app/frontend/dist ./backend/static
+COPY --from=frontend-build /app/frontend/dist ./frontend_dist
 COPY data/ ./data/
 COPY .env.example .env
 EXPOSE 8000
