@@ -183,3 +183,28 @@ Append-only log of completed sessions.
 - backend/tests/test_api_clients.py — new file (endpoint tests)
 
 **Tests**: All passing
+
+---
+
+## Session: 2026-06-30 — Feature 7: api_metrics_endpoints
+
+**Status**: done
+**Plan**:
+1. Create backend/api/routes/metrics.py with all 12 metric endpoints
+2. Register metrics router in main.py
+3. Write backend/tests/test_api_metrics.py covering all endpoints + zero records edge case
+4. Run ./init.sh until green
+
+**Key decisions**:
+- All metrics query only categorized records (WHERE categorized = true)
+- "Not specified" values excluded per Data Exclusion Rule from domain.md
+- INQUIRY_VOLUME_MAP used for converting bucket strings to numeric for avg calculations
+- Heatmap endpoint returns nested dict structure (vendor → sector → rate)
+- Temporal evolution groups by year-month string for Chart.js compatibility
+
+**Files modified**:
+- backend/api/routes/metrics.py — new file (12 metric endpoints)
+- backend/main.py — registered metrics router
+- backend/tests/test_api_metrics.py — new file (all endpoints + edge cases)
+
+**Tests**: All passing

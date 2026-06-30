@@ -1,7 +1,7 @@
 # Current Session
 
 ## Status
-- **Feature**: —
+- **Feature**: — none
 - **Started**: —
 - **Plan**:
   —
