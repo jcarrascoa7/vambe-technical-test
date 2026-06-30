@@ -18,6 +18,7 @@ from backend.models import Client  # noqa: F401
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s"
 )
+logger = logging.getLogger(__name__)
 
 Base.metadata.create_all(engine)
 
@@ -33,7 +34,7 @@ def run_etl() -> None:
         df = read_csv("data/vambe_clients_10k.csv")
         df = clean(df)
         inserted = load(df, db)
-        print(f"ETL complete: {inserted} records loaded")
+        logger.info("ETL complete: %d records loaded", inserted)
     finally:
         db.close()
 
