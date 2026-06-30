@@ -19,7 +19,7 @@ jobs:
         run: pip install ruff && ruff check backend/
 
       - name: Format check (black)
-        run: pip install black && black --check backend/
+        run: pip install black==25.11.0 && black --check backend/
 
       - name: Set up Node
         uses: actions/setup-node@v4
