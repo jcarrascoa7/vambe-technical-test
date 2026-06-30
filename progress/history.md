@@ -284,3 +284,66 @@ Append-only log of completed sessions.
 - `frontend/src/components/ClientTable.jsx` — new component: search input by name/email, paginated table with Previous/Next buttons and page indicator
 
 **Notes**: Backend already supported `search`, `limit`, `offset` params — no backend changes needed. `fetchStatus` already existed in `api/client.js`. Progress bar shows blue during processing, green when complete.
+
+---
+
+## Session: 2026-06-30 — Feature 11: dashboard_charts_basic
+
+**Status**: done
+**Plan**:
+1. Install chart.js + react-chartjs-2
+2. Create CloseRateBySector chart (bar, sorted descending)
+3. Create SectorDistribution chart (donut)
+4. Create PainDistribution chart (100% stacked bar)
+5. Create CloseRateBySource chart (bar + global avg reference line)
+6. Create CloseRateByConcreteness chart (bar + highlighted gap)
+7. Wire charts into App.jsx, make them respond to filter changes
+8. Fix close-rate-by-source endpoint to accept filters
+9. Run ./init.sh until green
+
+**Key decisions**:
+- Used chartjs-plugin-annotation for the global average reference line on CloseRateBySource
+- PainDistribution computes percentages client-side for 100% stacked bars
+- CloseRateByConcreteness colors highest green, lowest red, others blue to highlight the gap
+- All charts receive `apiParams` from useFilters hook — filter changes trigger re-fetch via useEffect dependency
+- All 5 chart-related API endpoints now accept the same filter params as close-rate-by-sector
+
+**Files modified**:
+- `frontend/package.json` — added chart.js, react-chartjs-2, chartjs-plugin-annotation
+- `frontend/src/App.jsx` — imported and rendered 5 chart components in grid layout
+- `frontend/src/components/Charts/CloseRateBySector.jsx` — new: horizontal bar chart, sorted descending
+- `frontend/src/components/Charts/SectorDistribution.jsx` — new: donut chart with 17-color palette
+- `frontend/src/components/Charts/PainDistribution.jsx` — new: 100% stacked bar chart
+- `frontend/src/components/Charts/CloseRateBySource.jsx` — new: bar chart with global avg reference line
+- `frontend/src/components/Charts/CloseRateByConcreteness.jsx` — new: bar chart with color-coded gap highlight
+- `backend/api/routes/metrics.py` — added filter params to 4 endpoints
+- `backend/tests/test_api_metrics.py` — added filter acceptance tests
+
+**Tests**: ./init.sh green
+
+---
+
+## Session: 2026-06-30 — Feature 12: dashboard_charts_advanced
+
+**Status**: done
+**Plan**:
+1. Create VendorSectorHeatmap component (HTML table with color-coded cells, no extra deps)
+2. Create TemporalEvolution component (dual Line chart)
+3. Create IntegrationsDistribution component (horizontal Bar chart)
+4. Create VolumeCloseRateScatter component (Scatter chart with labeled points)
+5. Wire all 4 into App.jsx grid
+6. Verify with ./init.sh
+
+**Key decisions**:
+- Heatmap uses CSS grid/table (Chart.js has no native heatmap; avoids adding chartjs-chart-matrix dep)
+- All backend endpoints already existed from features 7 and 11 — no backend changes needed
+- All 4 advanced charts receive `apiParams` from useFilters hook — filter changes trigger re-fetch
+
+**Files modified**:
+- `frontend/src/components/Charts/VendorSectorHeatmap.jsx` — new: HTML table with color-coded cells for vendor × sector close rates
+- `frontend/src/components/Charts/TemporalEvolution.jsx` — new: dual Line chart for leads and closes over time (monthly)
+- `frontend/src/components/Charts/IntegrationsDistribution.jsx` — new: horizontal Bar chart for top requested integrations
+- `frontend/src/components/Charts/VolumeCloseRateScatter.jsx` — new: Scatter chart with labeled points for volume × close rate by sector
+- `frontend/src/App.jsx` — imported and rendered all 4 advanced chart components in grid layout
+
+**Tests**: ./init.sh green

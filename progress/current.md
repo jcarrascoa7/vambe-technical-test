@@ -1,10 +1,8 @@
 # Current Session
 
 ## Status
-- **Feature**: — 
+- **Feature**: —
 - **Started**: —
 - **Plan**:
-  — 
 
 ## Notes
-—
