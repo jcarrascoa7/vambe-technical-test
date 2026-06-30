@@ -186,7 +186,7 @@ Si la API key no está configurada, la aplicación inicia pero la categorizació
 ## Enlaces
 
 - **Repositorio**: [https://github.com/jcarrascoa7/vambe-technical-test.git](https://github.com/jcarrascoa7/vambe-technical-test.git)
-- **App desplegada**: (placeholder — pendiente deploy en Render)
+- **App desplegada**: [https://vambe-dashboard.onrender.com](https://vambe-dashboard.onrender.com)
 
 ---
 
