@@ -3,6 +3,7 @@ import "./index.css";
 import Filters from "./components/Filters";
 import KPICards from "./components/KPICards";
 import ClientTable from "./components/ClientTable";
+import ChartInsight from "./components/ChartInsight";
 import CloseRateBySector from "./components/Charts/CloseRateBySector";
 import SectorDistribution from "./components/Charts/SectorDistribution";
 import PainDistribution from "./components/Charts/PainDistribution";
@@ -104,7 +105,6 @@ export default function App() {
     fetchStatus()
       .then(setStatus)
       .catch(() => {});
-    // ponytail: poll status every 10s so progress bar updates during categorization
     const id = setInterval(() => {
       fetchStatus()
         .then(setStatus)
@@ -126,7 +126,9 @@ export default function App() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <h1 className="text-xl font-bold text-gray-900">Vambe Dashboard</h1>
+          <h1 className="text-xl font-bold text-gray-900">
+            Categorización Automática y Visualización de Métricas de Clientes
+          </h1>
           {status && <CategorizationProgress status={status} />}
         </div>
       </header>
@@ -146,15 +148,33 @@ export default function App() {
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <CloseRateBySector apiParams={apiParams} />
-          <SectorDistribution apiParams={apiParams} />
-          <PainDistribution apiParams={apiParams} />
-          <CloseRateBySource apiParams={apiParams} />
-          <CloseRateByConcreteness apiParams={apiParams} />
-          <VendorSectorHeatmap apiParams={apiParams} />
-          <TemporalEvolution apiParams={apiParams} />
-          <IntegrationsDistribution apiParams={apiParams} />
-          <VolumeCloseRateScatter apiParams={apiParams} />
+          <ChartWithInsight chartType="close-rate-by-sector">
+            <CloseRateBySector apiParams={apiParams} />
+          </ChartWithInsight>
+          <ChartWithInsight chartType="sector-distribution">
+            <SectorDistribution apiParams={apiParams} />
+          </ChartWithInsight>
+          <ChartWithInsight chartType="pain-distribution">
+            <PainDistribution apiParams={apiParams} />
+          </ChartWithInsight>
+          <ChartWithInsight chartType="close-rate-by-source">
+            <CloseRateBySource apiParams={apiParams} />
+          </ChartWithInsight>
+          <ChartWithInsight chartType="close-rate-by-concreteness">
+            <CloseRateByConcreteness apiParams={apiParams} />
+          </ChartWithInsight>
+          <ChartWithInsight chartType="vendor-sector-heatmap">
+            <VendorSectorHeatmap apiParams={apiParams} />
+          </ChartWithInsight>
+          <ChartWithInsight chartType="temporal-evolution">
+            <TemporalEvolution apiParams={apiParams} />
+          </ChartWithInsight>
+          <ChartWithInsight chartType="integrations-distribution">
+            <IntegrationsDistribution apiParams={apiParams} />
+          </ChartWithInsight>
+          <ChartWithInsight chartType="volume-close-rate">
+            <VolumeCloseRateScatter apiParams={apiParams} />
+          </ChartWithInsight>
         </div>
 
         <ClientTable
@@ -171,13 +191,22 @@ export default function App() {
   );
 }
 
+function ChartWithInsight({ chartType, children }) {
+  return (
+    <div>
+      {children}
+      <ChartInsight chartType={chartType} />
+    </div>
+  );
+}
+
 function CategorizationProgress({ status }) {
   const { progress, categorized, total, is_complete } = status;
   return (
     <div className="mt-2">
       <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
         <span>
-          {categorized}/{total} categorized
+          {categorized}/{total} categorizados
         </span>
         <span>{progress}%</span>
       </div>
@@ -191,7 +220,7 @@ function CategorizationProgress({ status }) {
       </div>
       {!is_complete && (
         <p className="text-xs text-gray-400 mt-1">
-          Processing in background...
+          Procesando en segundo plano...
         </p>
       )}
     </div>

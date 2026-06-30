@@ -2,9 +2,9 @@ export default function KPICards({ total, closeRate, topSector, topVendor }) {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       <Card label="Total Leads" value={total.toLocaleString()} />
-      <Card label="Overall Close Rate" value={`${closeRate}%`} />
-      <Card label="Top Sector" value={topSector || "—"} />
-      <Card label="Top Vendor" value={topVendor || "—"} />
+      <Card label="Tasa de Cierre" value={`${closeRate}%`} />
+      <Card label="Sector Principal" value={topSector || "—"} />
+      <Card label="Vendedor Principal" value={topVendor || "—"} />
     </div>
   );
 }

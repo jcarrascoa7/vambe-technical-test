@@ -3,13 +3,13 @@ export default function Filters({ filters, setFilter, resetFilters }) {
     <div className="bg-white rounded-lg shadow p-4 mb-6">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-          Filters
+          Filtros
         </h2>
         <button
           onClick={resetFilters}
           className="text-xs text-blue-600 hover:text-blue-800 underline"
         >
-          Reset all
+          Limpiar todo
         </button>
       </div>
 
@@ -21,44 +21,44 @@ export default function Filters({ filters, setFilter, resetFilters }) {
           options={SECTORS}
         />
         <SelectField
-          label="Vendor"
+          label="Vendedor"
           value={filters.vendor}
           onChange={(v) => setFilter("vendor", v)}
           options={VENDORS}
         />
         <SelectField
-          label="Source"
+          label="Fuente"
           value={filters.source}
           onChange={(v) => setFilter("source", v)}
           options={SOURCES}
         />
         <SelectField
-          label="Channel"
+          label="Canal"
           value={filters.channel}
           onChange={(v) => setFilter("channel", v)}
           options={CHANNELS}
         />
         <div>
           <label className="block text-xs font-medium text-gray-500 mb-1">
-            Closed
+            Cerrado
           </label>
           <select
             value={filters.closed}
             onChange={(e) => setFilter("closed", e.target.value)}
             className="w-full text-sm border border-gray-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
           >
-            <option value="">All</option>
-            <option value="true">Yes</option>
+            <option value="">Todos</option>
+            <option value="true">Sí</option>
             <option value="false">No</option>
           </select>
         </div>
         <DateField
-          label="From"
+          label="Desde"
           value={filters.date_from}
           onChange={(v) => setFilter("date_from", v)}
         />
         <DateField
-          label="To"
+          label="Hasta"
           value={filters.date_to}
           onChange={(v) => setFilter("date_to", v)}
         />
@@ -78,7 +78,7 @@ function SelectField({ label, value, onChange, options }) {
         onChange={(e) => onChange(e.target.value)}
         className="w-full text-sm border border-gray-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
       >
-        <option value="">All</option>
+        <option value="">Todos</option>
         {options.map((opt) => (
           <option key={opt} value={opt}>
             {opt}
