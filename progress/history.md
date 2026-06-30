@@ -262,3 +262,25 @@ Append-only log of completed sessions.
 - frontend/src/App.jsx — integrated KPICards with apiParams
 
 **Tests**: ./init.sh green
+
+---
+
+## Session: 2026-06-30 — Feature 10: dashboard_client_table
+
+**Status**: done
+**Plan**:
+1. Extract client table from App.jsx into ClientTable.jsx with search + pagination
+2. Add categorization progress bar component
+3. Wire into App.jsx, verify build
+
+**Key decisions**:
+- Search: form-based submit (Enter or button), not debounced — simpler, no extra deps
+- Pagination: client-managed offset state, PAGE_LIMIT=20 rows per page
+- Progress bar: Tailwind-only, no Chart.js needed; polls `/clients/status` every 10s
+- No new dependencies: all done with React useState/useCallback + Tailwind classes
+
+**Files modified**:
+- `frontend/src/App.jsx` — extracted table into ClientTable component, added search/pagination state, added CategorizationProgress component with progress bar and 10s polling
+- `frontend/src/components/ClientTable.jsx` — new component: search input by name/email, paginated table with Previous/Next buttons and page indicator
+
+**Notes**: Backend already supported `search`, `limit`, `offset` params — no backend changes needed. `fetchStatus` already existed in `api/client.js`. Progress bar shows blue during processing, green when complete.
