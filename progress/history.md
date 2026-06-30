@@ -239,3 +239,26 @@ Append-only log of completed sessions.
 - frontend/src/App.jsx — wired filters, table, status
 
 **Tests**: ./init.sh green
+
+---
+
+## Session: 2026-06-30 — Feature 9: dashboard_kpi_cards
+
+**Status**: done
+**Plan**:
+1. Create KPICards component with total leads, overall close rate, top sector, top vendor
+2. Compute KPIs client-side from close-rate-by-sector and close-rate-by-vendor-sector endpoints
+3. Wire into App.jsx, pass apiParams so cards update with filters
+4. Build frontend, run init.sh
+
+**Key decisions**:
+- KPI cards compute derived metrics client-side from existing metric endpoints (no new backend endpoints)
+- Total leads from /clients count, close rate from /metrics/close-rate-by-sector, top sector/vendor from aggregations
+- Cards update reactively when filters change via apiParams dependency
+- Styled with Tailwind gradient cards for visual hierarchy
+
+**Files modified**:
+- frontend/src/components/KPICards.jsx — new file (KPI cards component)
+- frontend/src/App.jsx — integrated KPICards with apiParams
+
+**Tests**: ./init.sh green
