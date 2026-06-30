@@ -18,7 +18,7 @@ class Client(Base):
     transcription = Column(Text, nullable=True)
     sector = Column(String(100), nullable=True)
     size = Column(String(50), nullable=True)
-    inquiry_volume = Column(Integer, nullable=True)
+    inquiry_volume = Column(String(50), nullable=True)
     channel = Column(String(100), nullable=True)
     source = Column(String(100), nullable=True)
     integrations = Column(String(255), nullable=True)
