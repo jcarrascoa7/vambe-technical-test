@@ -139,6 +139,18 @@ This principle separates a useful dashboard from a decorative one. The business 
 
 ## Metrics
 
+### Data Exclusion Rule
+
+> **Records with `"Not specified"` in any categorization dimension must be excluded from metric calculations that depend on that dimension.**
+
+This applies to all metrics below. Examples:
+- `size = "Not specified"` → excluded from close-rate-by-size calculations
+- `inquiry_volume = "Not specified"` → excluded from average volume calculations
+- `concreteness = "Not specified"` → excluded from close-rate-by-concreteness
+- Records where `categorized = false` → excluded from all metrics (they haven't been processed yet)
+
+Records excluded from one dimension may still be included in metrics that don't depend on that dimension. For example, a record with `size = "Not specified"` is still valid for `close-rate-by-sector` if its `sector` is valid.
+
 ### Included Metrics
 
 | Metric | Decision it improves | Calculation |
