@@ -127,3 +127,29 @@ Append-only log of completed sessions.
 - `backend/tests/test_categorizer.py` — updated tests for new fallbacks and string inquiry_volume
 
 **Tests**: 48/48 passing
+
+---
+
+## Session: 2026-06-30 — Feature 5: categorizer_processor
+
+**Status**: done
+**Plan**:
+1. Implement processor.py: async batch loop (50 records), mark categorized=true, resume support
+2. Implement test_processor.py: batch processing, flag update, resume after restart, empty table
+3. Wire processor into main.py lifespan as background task
+4. Run ./init.sh until green
+
+**Key decisions**:
+- Used `asyncio.sleep` between batches for non-blocking background processing
+- Processor queries `WHERE categorized = false` for resume support
+- Wired into FastAPI lifespan with `asyncio.create_task` so it doesn't block startup
+- Batch size configurable via `BATCH_SIZE` constant (default 50)
+- Categorized flag set to `true` per record immediately after categorization (not batch-level)
+
+**Files modified**:
+- `backend/categorizer/processor.py` — new file (batch processor)
+- `backend/categorizer/__init__.py` — updated exports
+- `backend/main.py` — wired processor into lifespan as background task
+- `backend/tests/test_processor.py` — new file (4 tests)
+
+**Tests**: 52/52 passing

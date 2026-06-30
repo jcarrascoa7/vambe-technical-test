@@ -95,7 +95,7 @@
         "Background processing does not block API or dashboard",
         "backend/tests/test_processor.py covers: batch processing, categorized flag update, resume after restart, empty table handling"
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 6,
