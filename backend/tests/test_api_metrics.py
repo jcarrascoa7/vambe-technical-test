@@ -165,7 +165,9 @@ class TestPainDistributionBySector:
     def test_accepts_filter_params(self, client, db):
         _seed(db, sector="Retail", pain="High message volume", vendor="Toro")
         _seed(db, sector="Health", pain="Slow response", vendor="Puma", email="h@e.com")
-        resp = client.get("/metrics/pain-distribution-by-sector", params={"vendor": "Toro"})
+        resp = client.get(
+            "/metrics/pain-distribution-by-sector", params={"vendor": "Toro"}
+        )
         assert resp.status_code == 200
         data = resp.json()
         sectors = [r["sector"] for r in data["data"]]
@@ -187,8 +189,12 @@ class TestCloseRateByConcreteness:
 
     def test_accepts_filter_params(self, client, db):
         _seed(db, concreteness="Concrete", sector="Retail", closed=True)
-        _seed(db, concreteness="Tentative", sector="Health", closed=False, email="t@e.com")
-        resp = client.get("/metrics/close-rate-by-concreteness", params={"sector": "Retail"})
+        _seed(
+            db, concreteness="Tentative", sector="Health", closed=False, email="t@e.com"
+        )
+        resp = client.get(
+            "/metrics/close-rate-by-concreteness", params={"sector": "Retail"}
+        )
         assert resp.status_code == 200
         data = resp.json()
         levels = {r["concreteness"]: r for r in data["data"]}

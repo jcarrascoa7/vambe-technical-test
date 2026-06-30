@@ -138,9 +138,7 @@ async def test_empty_candidates_returns_empty(monkeypatch):
 @pytest.mark.asyncio
 async def test_missing_api_key_returns_empty(monkeypatch):
     """No API key configured returns empty string without making a request."""
-    monkeypatch.setattr(
-        "backend.categorizer.gemma_client.settings.GEMMA_API_KEY", ""
-    )
+    monkeypatch.setattr("backend.categorizer.gemma_client.settings.GEMMA_API_KEY", "")
 
     result = await call_gemma("prompt")
     assert result == ""

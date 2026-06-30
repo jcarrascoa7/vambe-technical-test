@@ -23,7 +23,9 @@ async def main(n: int = 20):
     try:
         records = (
             db.query(Client)
-            .filter(Client.categorized == False, Client.transcription.isnot(None))  # noqa: E712
+            .filter(
+                Client.categorized == False, Client.transcription.isnot(None)
+            )  # noqa: E712
             .order_by(Client.id)
             .limit(n)
             .all()
@@ -40,9 +42,11 @@ async def main(n: int = 20):
                     setattr(record, dim, value)
                 record.categorized = True
                 success += 1
-                print(f"  sector={result['sector']} size={result['size']} "
-                      f"volume={result['inquiry_volume']} channel={result['channel']} "
-                      f"source={result['source']} pain={result['pain']}")
+                print(
+                    f"  sector={result['sector']} size={result['size']} "
+                    f"volume={result['inquiry_volume']} channel={result['channel']} "
+                    f"source={result['source']} pain={result['pain']}"
+                )
             else:
                 fail += 1
                 print("  FAILED - will retry on next run")
@@ -61,8 +65,10 @@ async def main(n: int = 20):
 
         print("\n--- Sample results from DB ---")
         for c in saved[:5]:
-            print(f"  {c.id}: {c.name} | sector={c.sector} size={c.size} "
-                  f"channel={c.channel} pain={c.pain} concreteness={c.concreteness}")
+            print(
+                f"  {c.id}: {c.name} | sector={c.sector} size={c.size} "
+                f"channel={c.channel} pain={c.pain} concreteness={c.concreteness}"
+            )
 
     finally:
         db.close()

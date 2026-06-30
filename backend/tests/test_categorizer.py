@@ -2,10 +2,13 @@
 
 import json
 
-import pytest
 
 from backend.categorizer.prompts import VALID_CATEGORIES, build_categorization_prompt
-from backend.categorizer.validator import parse_llm_response, validate_category, validate_response
+from backend.categorizer.validator import (
+    parse_llm_response,
+    validate_category,
+    validate_response,
+)
 
 
 class TestBuildCategorizationPrompt:
@@ -109,18 +112,20 @@ class TestValidateCategory:
 
 class TestValidateResponse:
     def test_valid_response_passes(self):
-        raw = json.dumps({
-            "sector": "Health",
-            "size": "Medium",
-            "inquiry_volume": "High",
-            "channel": "WhatsApp",
-            "source": "Google/Search",
-            "integrations": "CRM",
-            "tone": "Professional",
-            "usage_type": "Scheduling",
-            "pain": "High message volume",
-            "concreteness": "Concrete/Actionable",
-        })
+        raw = json.dumps(
+            {
+                "sector": "Health",
+                "size": "Medium",
+                "inquiry_volume": "High",
+                "channel": "WhatsApp",
+                "source": "Google/Search",
+                "integrations": "CRM",
+                "tone": "Professional",
+                "usage_type": "Scheduling",
+                "pain": "High message volume",
+                "concreteness": "Concrete/Actionable",
+            }
+        )
         result = validate_response(raw)
         assert result["sector"] == "Health"
         assert result["size"] == "Medium"
@@ -128,18 +133,20 @@ class TestValidateResponse:
         assert result["channel"] == "WhatsApp"
 
     def test_invalid_categories_mapped(self):
-        raw = json.dumps({
-            "sector": "Aliens",
-            "size": "Huge",
-            "inquiry_volume": "Ultra",
-            "channel": "Fax",
-            "source": "Unknown",
-            "integrations": "Blockchain",
-            "tone": "Angry",
-            "usage_type": "Gaming",
-            "pain": "Boredom",
-            "concreteness": "Shy",
-        })
+        raw = json.dumps(
+            {
+                "sector": "Aliens",
+                "size": "Huge",
+                "inquiry_volume": "Ultra",
+                "channel": "Fax",
+                "source": "Unknown",
+                "integrations": "Blockchain",
+                "tone": "Angry",
+                "usage_type": "Gaming",
+                "pain": "Boredom",
+                "concreteness": "Shy",
+            }
+        )
         result = validate_response(raw)
         assert result["sector"] == "Other"
         assert result["size"] == "Not specified"
@@ -169,35 +176,39 @@ class TestValidateResponse:
         assert result["pain"] == "Other"
 
     def test_inquiry_volume_kept_as_string(self):
-        raw = json.dumps({
-            "sector": "Health",
-            "size": "Micro",
-            "inquiry_volume": "Low",
-            "channel": "WhatsApp",
-            "source": "LinkedIn",
-            "integrations": "CRM",
-            "tone": "Professional",
-            "usage_type": "Scheduling",
-            "pain": "High message volume",
-            "concreteness": "Mixed",
-        })
+        raw = json.dumps(
+            {
+                "sector": "Health",
+                "size": "Micro",
+                "inquiry_volume": "Low",
+                "channel": "WhatsApp",
+                "source": "LinkedIn",
+                "integrations": "CRM",
+                "tone": "Professional",
+                "usage_type": "Scheduling",
+                "pain": "High message volume",
+                "concreteness": "Mixed",
+            }
+        )
         result = validate_response(raw)
         assert isinstance(result["inquiry_volume"], str)
         assert result["inquiry_volume"] == "Low"
 
     def test_inquiry_volume_not_specified_stored(self):
-        raw = json.dumps({
-            "sector": "Health",
-            "size": "Micro",
-            "inquiry_volume": "Not specified",
-            "channel": "WhatsApp",
-            "source": "LinkedIn",
-            "integrations": "CRM",
-            "tone": "Professional",
-            "usage_type": "Scheduling",
-            "pain": "High message volume",
-            "concreteness": "Mixed",
-        })
+        raw = json.dumps(
+            {
+                "sector": "Health",
+                "size": "Micro",
+                "inquiry_volume": "Not specified",
+                "channel": "WhatsApp",
+                "source": "LinkedIn",
+                "integrations": "CRM",
+                "tone": "Professional",
+                "usage_type": "Scheduling",
+                "pain": "High message volume",
+                "concreteness": "Mixed",
+            }
+        )
         result = validate_response(raw)
         assert result["inquiry_volume"] == "Not specified"
 
