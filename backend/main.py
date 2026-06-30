@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import func
 
+from backend.api.routes.clients import router as clients_router
 from backend.categorizer.processor import run_categorization
 from backend.database import Base, SessionLocal, engine
 from backend.etl.cleaner import clean, read_csv
@@ -60,6 +61,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Vambe Dashboard", version="0.1.0", lifespan=lifespan)
+
+app.include_router(clients_router)
+
 
 @app.get("/health")
 def health():
