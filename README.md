@@ -4,6 +4,8 @@ Aplicación full-stack que procesa transcripciones de reuniones de ventas, las c
 
 ---
 
+<img width="1464" height="1237" alt="Captura de pantalla 2026-06-30 a la(s) 8 55 18 a m" src="https://github.com/user-attachments/assets/1ab82859-4fe4-4269-8f8a-e5e69e8fe80b" />
+
 ## Instrucciones para ejecutar la aplicación
 
 ### Prerrequisitos
