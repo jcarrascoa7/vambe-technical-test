@@ -1,0 +1,253 @@
+{
+  "project": "vambe-dashboard",
+  "description": "Full-stack app that processes sales meeting transcripts, categorizes them with an LLM (Gemma 4), and displays metrics in an interactive dashboard.",
+  "rules": {
+    "one_feature_at_a_time": true,
+    "require_tests_to_close": true,
+    "valid_status": ["pending", "in_progress", "done", "blocked"]
+  },
+  "features": [
+    {
+      "id": 0,
+      "name": "bootstrap",
+      "title": "Bootstrap: Environment and Scaffolding",
+      "description": "Install Docker (if missing), create .env.example, docker-compose.yml, Dockerfile, backend skeleton (FastAPI + SQLAlchemy), frontend skeleton (React+Vite), and verify docker compose up --build works. This is the foundation for all other features.",
+      "depends_on": [],
+      "acceptance": [
+        "Docker and Docker Compose are installed and running (or confirmed already present)",
+        ".env.example exists with all required variables documented",
+        "docker-compose.yml defines services: app and db (PostgreSQL 15)",
+        "Dockerfile builds a single container with Python backend and Node frontend build stage",
+        "backend/main.py starts FastAPI and serves /docs",
+        "backend/config.py defines settings (DB connection string, env vars) using pydantic-settings",
+        "backend/database.py creates SQLAlchemy engine, session factory, and Base",
+        "backend/models.py defines empty Client model placeholder (filled in feature 2)",
+        "backend/requirements.txt includes fastapi, uvicorn, sqlalchemy, pandas, httpx, pydantic, pydantic-settings, pytest, psycopg2-binary",
+        "backend/tests/__init__.py exists",
+        "frontend/ has a working React+Vite app with package.json that builds to static files",
+        "docker compose up --build starts without errors and app is reachable at localhost:8000",
+        "init.sh passes all checks (steps 1-7 green)"
+      ],
+      "status": "done"
+    },
+    {
+      "id": 1,
+      "name": "project_scaffolding",
+      "title": "Project Scaffolding (merged into bootstrap)",
+      "description": "REMOVED — superseded by feature 0 (bootstrap).",
+      "depends_on": [0],
+      "acceptance": [
+        "Feature merged into feature 0 (bootstrap)"
+      ],
+      "status": "done"
+    },
+    {
+      "id": 2,
+      "name": "etl_pipeline",
+      "title": "ETL Pipeline",
+      "description": "Read CSV, clean data with pandas, extract signals with regex, and load into PostgreSQL. Runs automatically on first startup if table is empty.",
+      "depends_on": [0],
+      "acceptance": [
+        "backend/models.py defines Client model with all fields: id, name, email, phone, meeting_date, vendor, closed (bool), transcription, sector, size, inquiry_volume, channel, source, integrations, tone, usage_type, pain, concreteness, categorized (bool, default false)",
+        "backend/etl/cleaner.py reads CSV, parses dates to datetime, handles nulls and duplicates",
+        "backend/etl/extractor.py extracts with regex: volume, locations, channels, integrations, discovery source",
+        "backend/etl/loader.py loads cleaned data into PostgreSQL clients table",
+        "ETL runs on startup only if table is empty (idempotent)",
+        "backend/tests/test_etl.py covers: CSV cleaning, date parsing, null handling, duplicate removal",
+        "backend/tests/test_extractor.py covers: volume extraction, channel detection, integration detection, no-mention case"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": 3,
+      "name": "categorizer_prompts_validator",
+      "title": "Categorizer Prompts and Validator",
+      "description": "LLM prompts with structured schema and few-shot examples for each dimension, plus category validation against predefined lists.",
+      "depends_on": [0, 2],
+      "acceptance": [
+        "backend/categorizer/prompts.py builds structured prompts with schema and few-shot examples for each dimension (sector, size, volume, channel, source, integrations, tone, usage_type, pain, concreteness)",
+        "backend/categorizer/validator.py validates returned categories against predefined lists from docs/domain.md, maps invalid to 'Otros'",
+        "backend/tests/test_categorizer.py covers: valid category passes, invalid category mapped, malformed JSON handled, empty response handled"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": 4,
+      "name": "categorizer_client",
+      "title": "Categorizer Gemma Client",
+      "description": "Async HTTP client for Gemma 4 API using httpx. Handles retries, timeouts, and malformed JSON responses gracefully.",
+      "depends_on": [0, 3],
+      "acceptance": [
+        "backend/categorizer/gemma_client.py makes async HTTP calls to Gemma 4 API with httpx",
+        "Malformed JSON responses are handled gracefully (record marked for retry, no crash)",
+        "backend/tests/test_gemma_client.py covers: successful call, timeout handling, malformed JSON, empty response, retry logic"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": 5,
+      "name": "categorizer_processor",
+      "title": "Categorizer Batch Processor",
+      "description": "Batch orchestration that processes uncategorized records in groups of 50, marks categorized=true after each batch, and supports resume on restart.",
+      "depends_on": [0, 3, 4],
+      "acceptance": [
+        "backend/categorizer/processor.py processes batches of 50 records, marks categorized=true after each batch",
+        "Processor only processes WHERE categorized = false (resume on restart)",
+        "Background processing does not block API or dashboard",
+        "backend/tests/test_processor.py covers: batch processing, categorized flag update, resume after restart, empty table handling"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": 6,
+      "name": "api_clients_endpoints",
+      "title": "API Client Endpoints",
+      "description": "Pydantic response schemas and REST endpoints for clients: filters, search, and pagination. All queries run against categorized data only. Note: schemas defined here (ClientResponse, ClientListResponse, StatusResponse, MetricResponse) are shared by feature 7 (metrics endpoints).",
+      "depends_on": [0, 2],
+      "acceptance": [
+        "backend/api/schemas.py defines ClientResponse with all model fields serialized correctly",
+        "backend/api/schemas.py defines ClientListResponse with items, total, limit, offset",
+        "backend/api/schemas.py defines StatusResponse with total, categorized, progress, is_complete",
+        "backend/api/schemas.py defines MetricResponse with generic structure for metric data (used by feature 7)",
+        "All schemas use Pydantic v2 with proper field types and validators",
+        "GET /clients supports filters: sector, size, volume, source, channel, vendor, closed, date range",
+        "GET /clients?search=term searches across client name and email",
+        "Filters are combinable (AND logic)",
+        "GET /clients supports pagination with limit and offset",
+        "backend/tests/test_schemas.py covers: valid data serialization, missing fields, type coercion",
+        "backend/tests/test_api_clients.py covers: no filters, single filter, combined filters, search, empty results, pagination"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": 7,
+      "name": "api_metrics_endpoints",
+      "title": "API Metrics Endpoints",
+      "description": "REST endpoints for metrics aggregations. All queries run against categorized data only.",
+      "depends_on": [0, 2, 6],
+      "acceptance": [
+        "backend/api/schemas.py defines MetricResponse with generic structure for metric data",
+        "GET /metrics/close-rate-by-sector returns close rate per sector (closed=1 by sector / total by sector)",
+        "GET /metrics/close-rate-by-vendor-sector returns heatmap-ready data (closed=1 by (vendor, sector) / total by (vendor, sector))",
+        "GET /metrics/close-rate-by-source returns close rate per acquisition source (closed=1 by source / total by source)",
+        "GET /metrics/pain-distribution-by-sector returns count of each pain category per sector",
+        "GET /metrics/close-rate-by-concreteness returns close rate per language concreteness level",
+        "GET /metrics/sector-distribution returns count by sector / total",
+        "GET /metrics/avg-volume-by-sector returns average monthly inquiry volume grouped by sector",
+        "GET /metrics/integrations-distribution returns count of each integration type",
+        "GET /metrics/close-rate-by-channel returns close rate per main contact channel",
+        "GET /metrics/temporal-evolution returns leads and closes grouped by month",
+        "GET /metrics/top-sectors-by-volume-rate returns sectors ranked by avg_volume * close_rate",
+        "GET /metrics/status returns total, categorized count, progress percentage, is_complete boolean",
+        "Metrics are calculated only on categorized records (partial data supported)",
+        "backend/tests/test_api_metrics.py covers: all metric endpoints, zero records edge case"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": 8,
+      "name": "dashboard_filters",
+      "title": "Dashboard Filters Panel",
+      "description": "React filters panel that allows selecting sector, vendor, source, channel, closed status, and date range. Changing filters updates all charts and table in real time.",
+      "depends_on": [0, 6, 7],
+      "acceptance": [
+        "Filters panel allows selecting: sector, vendor, source, channel, closed status, date range",
+        "Changing filters updates all charts and table in real time",
+        "Filters are passed as query params to API endpoints",
+        "App builds and runs without errors via docker compose up"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": 9,
+      "name": "dashboard_kpi_cards",
+      "title": "Dashboard KPI Cards",
+      "description": "KPI cards displaying top-level metrics: total leads, overall close rate, top sector, top vendor.",
+      "depends_on": [0, 6, 7, 8],
+      "acceptance": [
+        "KPI cards display: total leads, overall close rate, top sector, top vendor",
+        "KPI cards update when filters change",
+        "App builds and runs without errors via docker compose up"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": 10,
+      "name": "dashboard_client_table",
+      "title": "Dashboard Client Table",
+      "description": "Searchable and paginated client table component with categorization progress bar.",
+      "depends_on": [0, 6, 7, 8],
+      "acceptance": [
+        "Client table is searchable by name/email and paginated",
+        "Categorization progress bar shows percentage while background processing runs",
+        "App builds and runs without errors via docker compose up"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": 11,
+      "name": "dashboard_charts_basic",
+      "title": "Dashboard Charts (Basic)",
+      "description": "Core chart visualizations using Chart.js: bar charts, donut, and stacked bars.",
+      "depends_on": [0, 6, 7, 8],
+      "acceptance": [
+        "Bar chart shows close rate by sector (sorted descending)",
+        "Donut chart shows sector distribution",
+        "Stacked bar chart shows pain distribution by sector (100% stacked)",
+        "Bar chart shows close rate by acquisition source with global average reference line",
+        "Bar chart shows close rate by language concreteness with highlighted gap",
+        "Charts respond to filter changes"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": 12,
+      "name": "dashboard_charts_advanced",
+      "title": "Dashboard Charts (Advanced)",
+      "description": "Advanced chart visualizations using Chart.js: heatmap, dual line chart, treemap, and scatter plot.",
+      "depends_on": [0, 6, 7, 8, 11],
+      "acceptance": [
+        "Heatmap shows vendor × industry close rates",
+        "Line chart shows leads and closes over time (monthly, dual line)",
+        "Treemap or horizontal bars shows top requested integrations",
+        "Scatter plot shows volume × close rate by sector with labeled points",
+        "Charts respond to filter changes"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": 13,
+      "name": "ci_cd_pipeline",
+      "title": "CI/CD Pipeline",
+      "description": "GitHub Actions workflows for linting, testing, and Docker build verification. Runs on every push and PR.",
+      "depends_on": [0, 2, 6],
+      "acceptance": [
+        ".github/workflows/ci.yml defines a workflow triggered on push and pull_request",
+        "CI workflow runs Python linting (ruff) and formatting check (black --check)",
+        "CI workflow runs frontend linting (eslint/prettier)",
+        "CI workflow builds Docker image with docker compose build",
+        "CI workflow runs pytest inside the container: docker compose exec app pytest backend/tests/ -v",
+        "CI workflow runs frontend build: npm run build inside the container",
+        "Workflow fails fast if any step fails (no partial green)",
+        ".github/workflows/deploy.yml defines deployment workflow for Railway on push to main (placeholder for final deploy)"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": 14,
+      "name": "integration_and_polish",
+      "title": "Integration and Polish",
+      "description": "End-to-end verification, README with setup instructions, architecture documentation, and final cleanup.",
+      "depends_on": [0, 3, 5, 10, 12, 13],
+      "acceptance": [
+        "docker compose up --build runs from clean state without errors",
+        "ETL + categorization run automatically on first startup",
+        "Dashboard shows real data with working charts and filters",
+        "All pytest tests pass: docker compose exec app pytest backend/tests/ -v",
+        "README.md contains: project description, local setup instructions (docker compose up --build), architecture overview, key design decisions and trade-offs",
+        "No debug print() statements, no TODOs without context, no temp files"
+      ],
+      "status": "pending"
+    }
+  ]
+}
