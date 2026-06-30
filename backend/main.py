@@ -74,4 +74,4 @@ def health():
 
 
 # Mount static files (React build) — populated after frontend build
-app.mount("/", StaticFiles(directory="backend/static", html=True), name="static")
+app.mount("/", StaticFiles(directory="frontend_dist", html=True), name="static")

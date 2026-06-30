@@ -1,4 +1,4 @@
-const API_BASE = "/api";
+const API_BASE = "";
 
 export async function fetchClients(params = {}) {
   const query = new URLSearchParams();
