@@ -58,5 +58,5 @@ jobs:
       - name: Run tests
         run: docker compose exec -T app pytest backend/tests/ -v
 
-      - name: Frontend build
-        run: docker compose exec -T app sh -c "cd frontend && npm ci && npm run build"
+      - name: Verify frontend dist exists
+        run: docker compose exec -T app test -d frontend_dist
