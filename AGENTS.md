@@ -120,13 +120,13 @@ Before ending:
 | `POSTGRES_USER` | PostgreSQL username (must match `DATABASE_URL`) | `postgres` |
 | `POSTGRES_PASSWORD` | PostgreSQL password (must match `DATABASE_URL`) | `postgres` |
 | `POSTGRES_DB` | PostgreSQL database name (must match `DATABASE_URL`) | `vambe` |
-| `GEMMA_API_KEY` | API key for LLM (Google AI Studio) | `your_api_key_here` |
-| `GEMMA_API_URL` | LLM API base URL | `https://generativelanguage.googleapis.com/v1beta/models` |
-| `GEMMA_MODEL` | LLM model name | `gemma-4` |
+| `LLM_API_KEY` | API key for LLM (OpenAI-compatible) | `your_api_key_here` |
+| `LLM_API_URL` | LLM API base URL | `https://token-plan-sgp.xiaomimimo.com/v1` |
+| `LLM_MODEL` | LLM model name | `mimo-v2.5-pro` |
 | `MAX_RECORDS_TO_CATEGORIZE` | Max records the categorizer processes (1000 for demo, 10000 for full) | `1000` |
 
 ### Notes
 
-- `GEMMA_API_KEY` is **required** for the categorizer to work. Without it, the app starts but categorization fails silently.
+- `LLM_API_KEY` is **required** for the categorizer to work. Without it, the app starts but categorization fails silently.
 - `DATABASE_URL` uses the Docker service name `db` as hostname, not `localhost`. This works inside Docker Compose networking.
 - `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` must match the credentials in `DATABASE_URL`.

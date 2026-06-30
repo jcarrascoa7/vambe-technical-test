@@ -231,7 +231,7 @@
         "Workflow fails fast if any step fails (no partial green)",
         ".github/workflows/deploy.yml defines deployment workflow for Railway on push to main (placeholder for final deploy)"
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 14,

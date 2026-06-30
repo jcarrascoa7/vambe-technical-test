@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -12,6 +13,10 @@ from backend.database import Base, SessionLocal, engine
 from backend.etl.cleaner import clean, read_csv
 from backend.etl.loader import load
 from backend.models import Client  # noqa: F401
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s"
+)
 
 Base.metadata.create_all(engine)
 
