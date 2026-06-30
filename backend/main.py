@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import func
 
+from backend.api.insights import router as insights_router
 from backend.api.routes.clients import router as clients_router
 from backend.api.routes.metrics import router as metrics_router
 from backend.categorizer.processor import run_categorization
@@ -70,6 +71,7 @@ app = FastAPI(title="Vambe Dashboard", version="0.1.0", lifespan=lifespan)
 
 app.include_router(clients_router)
 app.include_router(metrics_router)
+app.include_router(insights_router)
 
 
 @app.get("/health")
