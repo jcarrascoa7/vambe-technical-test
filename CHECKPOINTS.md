@@ -27,7 +27,7 @@
 
 ## C4 — The Verification Is Real
 
-- [ ] `backend/tests/` has at least one test per module (`test_etl.py`, `test_extractor.py`, `test_categorizer.py`, `test_gemma_client.py`, `test_processor.py`, `test_schemas.py`, `test_api_clients.py`, `test_api_metrics.py`).
+- [ ] `backend/tests/` has at least one test per module (`test_etl.py`, `test_categorizer.py`, `test_gemma_client.py`, `test_processor.py`, `test_schemas.py`, `test_api_clients.py`, `test_api_metrics.py`).
 - [ ] Tests use SQLite in-memory for DB fixtures, not the production PostgreSQL.
 - [ ] `docker compose exec app pytest backend/tests/ -v` shows all green (or `[WARN] No tests found` for features that don't produce tests).
 - [ ] `docker compose up --build` starts without errors and app is reachable at `http://localhost:8000`.

@@ -33,7 +33,7 @@
 | `backend/etl/` | CSV cleaning (pandas), signal extraction (regex), DB loading | When working on data pipeline |
 | `backend/categorizer/` | LLM prompts, Gemma 4 client, batch processing, validation | When working on categorization |
 | `backend/api/routes/` | API endpoints: clients (filters, search), metrics (aggregations) | When working on API layer |
-| `backend/tests/` | pytest tests for ETL, extractor, categorizer, API | For verification |
+| `backend/tests/` | pytest tests for ETL, categorizer, API | For verification |
 | `frontend/` | React + Vite + Chart.js + Tailwind dashboard | When working on UI |
 | `frontend/src/components/` | Dashboard, Filters, KPICards, Charts, ClientTable | When building UI components |
 | `frontend/src/hooks/` | Custom React hooks (useFilters) | When working on filter logic |

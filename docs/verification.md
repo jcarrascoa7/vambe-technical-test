@@ -32,7 +32,6 @@
 | Module | Command | Expected |
 |---|---|---|
 | ETL | `pytest backend/tests/test_etl.py -v` | CSV loads, dates parse, nulls handled |
-| Extractor | `pytest backend/tests/test_extractor.py -v` | Regex extracts signals correctly |
 | Categorizer | `pytest backend/tests/test_categorizer.py -v` | Validation catches bad categories |
 | API clients | `pytest backend/tests/test_api_clients.py -v` | Filters and search work |
 | API metrics | `pytest backend/tests/test_api_metrics.py -v` | Aggregations are correct |
