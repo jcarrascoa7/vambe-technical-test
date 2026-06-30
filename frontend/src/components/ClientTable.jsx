@@ -133,7 +133,10 @@ export default function ClientTable({
                     <td className="py-2 px-3">{c.inquiry_volume || "—"}</td>
                     <td className="py-2 px-3">{c.channel || "—"}</td>
                     <td className="py-2 px-3">{c.source || "—"}</td>
-                    <td className="py-2 px-3 max-w-[120px] truncate" title={c.integrations || ""}>
+                    <td
+                      className="py-2 px-3 max-w-[120px] truncate"
+                      title={c.integrations || ""}
+                    >
                       {c.integrations || "—"}
                     </td>
                     <td className="py-2 px-3">{c.tone || "—"}</td>
@@ -153,7 +156,10 @@ export default function ClientTable({
                       </span>
                     </td>
                     <td className="py-2 px-3 max-w-[200px]">
-                      <p className="text-xs text-gray-500 line-clamp-2" title={c.transcription || ""}>
+                      <p
+                        className="text-xs text-gray-500 line-clamp-2"
+                        title={c.transcription || ""}
+                      >
                         {c.transcription || "—"}
                       </p>
                     </td>

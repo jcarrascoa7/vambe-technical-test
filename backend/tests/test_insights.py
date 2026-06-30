@@ -20,24 +20,26 @@ def client():
 
 class TestInsightSuccess:
     @patch("backend.api.insights.call_llm", new_callable=AsyncMock)
-    def test_returns_llm_text(self, mock_llm, client):
-        mock_llm.return_value = '{"text": "Este gráfico muestra la tasa de cierre por sector."}'
+    def test_returns_llm_decision(self, mock_llm, client):
+        mock_llm.return_value = (
+            '{"decision": "Priorizar sectores con mayor tasa de cierre."}'
+        )
         resp = client.get("/insights/close-rate-by-sector")
         assert resp.status_code == 200
         data = resp.json()
         assert data["chart_type"] == "close-rate-by-sector"
-        assert "tasa de cierre" in data["text"]
+        assert "sectores" in data["decision"]
 
     @patch("backend.api.insights.call_llm", new_callable=AsyncMock)
     def test_handles_plain_text_response(self, mock_llm, client):
-        mock_llm.return_value = "Este gráfico muestra la distribución de sectores."
+        mock_llm.return_value = "Priorizar sectores con mayor tasa de cierre."
         resp = client.get("/insights/sector-distribution")
         assert resp.status_code == 200
-        assert "distribución" in resp.json()["text"]
+        assert "sectores" in resp.json()["decision"]
 
     @patch("backend.api.insights.call_llm", new_callable=AsyncMock)
     def test_all_chart_types_accepted(self, mock_llm, client):
-        mock_llm.return_value = '{"text": "Análisis del gráfico."}'
+        mock_llm.return_value = '{"decision": "Análisis del gráfico."}'
         for chart_type in [
             "close-rate-by-sector",
             "sector-distribution",
@@ -53,6 +55,12 @@ class TestInsightSuccess:
             assert resp.status_code == 200
             assert resp.json()["chart_type"] == chart_type
 
+    def test_justification_within_word_limit(self, client):
+        resp = client.get("/insights/close-rate-by-sector")
+        assert resp.status_code == 200
+        justification = resp.json()["justification"]
+        assert len(justification.split()) <= 25
+
 
 class TestInsightFallback:
     @patch("backend.api.insights.call_llm", new_callable=AsyncMock)
@@ -60,41 +68,42 @@ class TestInsightFallback:
         mock_llm.return_value = ""
         resp = client.get("/insights/close-rate-by-sector")
         assert resp.status_code == 200
-        assert "No se pudo generar" in resp.json()["text"]
+        assert "No se pudo generar" in resp.json()["decision"]
 
     @patch("backend.api.insights.call_llm", new_callable=AsyncMock)
     def test_fallback_on_malformed_json(self, mock_llm, client):
         mock_llm.return_value = "not json {"
         resp = client.get("/insights/sector-distribution")
         assert resp.status_code == 200
-        assert resp.json()["text"]
+        assert resp.json()["decision"]
 
     @patch("backend.api.insights.call_llm", new_callable=AsyncMock)
-    def test_fallback_on_empty_json_text_field(self, mock_llm, client):
-        mock_llm.return_value = '{"text": ""}'
+    def test_fallback_on_empty_json_decision_field(self, mock_llm, client):
+        mock_llm.return_value = '{"decision": ""}'
         resp = client.get("/insights/close-rate-by-source")
         assert resp.status_code == 200
-        assert "No se pudo generar" in resp.json()["text"]
+        assert "No se pudo generar" in resp.json()["decision"]
 
     def test_unknown_chart_type(self, client):
         resp = client.get("/insights/unknown-chart")
         assert resp.status_code == 200
-        assert "no reconocido" in resp.json()["text"]
+        assert "no reconocido" in resp.json()["decision"]
 
 
 class TestInsightSkeletonState:
     """The skeleton/loading state is handled entirely on the frontend.
-    The backend always returns a response (either LLM text or fallback).
+    The backend always returns a response (either LLM decision or fallback).
     These tests verify the response structure is consistent."""
 
     @patch("backend.api.insights.call_llm", new_callable=AsyncMock)
     def test_response_has_required_fields(self, mock_llm, client):
-        mock_llm.return_value = '{"text": "Análisis."}'
+        mock_llm.return_value = '{"decision": "Análisis."}'
         resp = client.get("/insights/close-rate-by-sector")
         data = resp.json()
         assert "chart_type" in data
-        assert "text" in data
-        assert isinstance(data["text"], str)
+        assert "justification" in data
+        assert "decision" in data
+        assert isinstance(data["decision"], str)
 
     @patch("backend.api.insights.call_llm", new_callable=AsyncMock)
     def test_response_structure_on_failure(self, mock_llm, client):
@@ -102,5 +111,6 @@ class TestInsightSkeletonState:
         resp = client.get("/insights/close-rate-by-sector")
         data = resp.json()
         assert "chart_type" in data
-        assert "text" in data
-        assert len(data["text"]) > 0
+        assert "justification" in data
+        assert "decision" in data
+        assert len(data["decision"]) > 0

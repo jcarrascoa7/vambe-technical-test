@@ -34,6 +34,7 @@ export async function fetchMetric(name, params = {}) {
 
 export async function fetchInsight(chartType) {
   const res = await fetch(`${API_BASE}/insights/${chartType}`);
-  if (!res.ok) throw new Error(`fetchInsight ${chartType} failed: ${res.status}`);
+  if (!res.ok)
+    throw new Error(`fetchInsight ${chartType} failed: ${res.status}`);
   return res.json();
 }

@@ -434,7 +434,7 @@ Append-only log of completed sessions.
 
 **Key decisions**:
 - Used `call_llm` (OpenAI-compatible client) — `gemma_client.py` has a pre-existing bug referencing `settings.GEMMA_API_KEY` which doesn't exist in config
-- Prompt returns JSON with `text` field; if LLM returns plain text instead, it's used directly
+- Prompt returns JSON with `decision` field; if LLM returns plain text instead, it's used directly
 - ChartWithInsight wrapper in App.jsx renders chart + insight together — keeps chart components unchanged
 - Skeleton uses Tailwind `animate-pulse` (three gray bars), no custom CSS
 - Domain context per chart maps to "Decision it improves" and "Justification" from docs/domain.md
@@ -442,7 +442,7 @@ Append-only log of completed sessions.
 **Files modified**:
 - `backend/api/insights.py` — new: GET /insights/{chart_type} endpoint
 - `backend/main.py` — registered insights_router
-- `backend/tests/test_insights.py` — new: 9 tests (success, fallbacks, chart types)
+- `backend/tests/test_insights.py` — new: 10 tests (success, fallbacks, chart types, justification word limit)
 - `frontend/src/api/client.js` — added fetchInsight(chartType)
 - `frontend/src/components/ChartInsight.jsx` — new: reusable skeleton + text component
 - `frontend/src/App.jsx` — title localized, ChartWithInsight wrapper, CategorizationProgress in Spanish
@@ -450,4 +450,4 @@ Append-only log of completed sessions.
 - `frontend/src/components/Filters.jsx` — labels localized to Spanish
 - `frontend/src/components/ClientTable.jsx` — expanded with all dimensions + transcription, localized
 
-**Tests**: 134/134 passing (125 existing + 9 new insight tests)
+**Tests**: 135/135 passing (125 existing + 10 new insight tests)

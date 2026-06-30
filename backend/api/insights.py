@@ -17,7 +17,8 @@ router = APIRouter(prefix="/insights", tags=["insights"])
 
 class InsightResponse(BaseModel):
     chart_type: str
-    text: str
+    justification: str
+    decision: str
 
 
 # Decision/justification context per chart from docs/domain.md
@@ -32,87 +33,97 @@ _CHART_CONTEXT: dict[str, dict[str, str]] = {
     },
     "pain-distribution": {
         "decision": "Calibrar el pitch de ventas por vertical",
-        "justification": "Si en educación el dolor dominante es 'no-shows' pero el equipo hace demos enfocadas en 'volumen de mensajes', la conversación no conecta.",
+        "justification": "Si el dolor dominante no se alinea con el enfoque del equipo de ventas, la conversación no conecta.",
     },
     "close-rate-by-source": {
         "decision": "Dónde invertir en marketing y canales de adquisición",
-        "justification": "Si los leads de LinkedIn cierran al 75% y los de Google al 50%, el equipo debe invertir más en LinkedIn.",
+        "justification": "Los leads de fuentes con mayor tasa de cierre deben recibir más inversión de marketing y seguimiento prioritario.",
     },
     "close-rate-by-concreteness": {
         "decision": "Calificar leads en tiempo real",
-        "justification": "Los prospectos que cierran usan lenguaje concreto y accionable; los que no usan lenguaje tentativo. Si la brecha es grande, se convierte en una señal de calificación en tiempo real.",
+        "justification": "Si la brecha de cierre entre lenguaje concreto y tentativo es alta, se convierte en señal de calificación en tiempo real.",
     },
     "vendor-sector-heatmap": {
         "decision": "A quién asignar cada lead",
-        "justification": "Muestra qué vendedor rinde mejor en qué sector. Cuadros oscuros = combinaciones ganadoras; claros = oportunidades perdidas.",
+        "justification": "Las combinaciones vendedor-sector con mayor tasa de cierre deben guiar la asignación de leads entrantes.",
     },
     "temporal-evolution": {
         "decision": "Evaluar tendencia de crecimiento y eficiencia",
-        "justification": "Muestra si estamos mejorando: tendencia de crecimiento de leads y eficiencia comercial mes a mes.",
+        "justification": "La tendencia de leads y cierres por mes muestra si el crecimiento y la eficiencia comercial están mejorando.",
     },
     "integrations-distribution": {
         "decision": "Priorizar la hoja de ruta técnica",
-        "justification": "Si el 40% de los prospectos piden integración con Salesforce, eso es input directo para el equipo de producto.",
+        "justification": "Las integraciones más solicitadas por prospectos deben priorizarse en la hoja de ruta técnica del producto.",
     },
     "volume-close-rate": {
         "decision": "Identificar 'sweet spots' de sectores",
-        "validación": "Valida la propuesta de valor: ¿los sectores con más dolor cierran más?",
-        "justification": "Combina volumen promedio de consultas mensuales con tasa de cierre para identificar los sectores de mayor valor estratégico.",
+        "justification": "Combina volumen promedio de consultas mensuales con tasa de cierre para identificar sectores de mayor valor estratégico.",
     },
 }
 
 
+def _truncate_justification(text: str, max_words: int = 25) -> str:
+    words = text.split()
+    if len(words) <= max_words:
+        return text
+    return " ".join(words[:max_words])
+
+
 def _build_prompt(chart_type: str, context: dict[str, str]) -> str:
-    """Build a prompt for the LLM to generate a Spanish insight paragraph."""
     return (
         "Eres un analista de datos experto en ventas y CRM para Vambe, "
         "una startup chilena que automatiza atención al cliente y ventas vía "
         "WhatsApp e Instagram.\n\n"
-        f"Debes explicar un gráfico del dashboard de tipo '{chart_type}'.\n\n"
-        f"Decisión de negocio que mejora: {context['decision']}\n"
-        f"Justificación: {context['justification']}\n\n"
+        f"Debes analizar un gráfico del dashboard de tipo '{chart_type}'.\n\n"
+        f"Contexto de negocio: {context['decision']}\n\n"
         "Instrucciones:\n"
-        "- Escribe UN párrafo explicativo en español (3-5 oraciones).\n"
-        "- Explica qué muestra el gráfico y qué decisión de negocio se puede "
-        "derivar de los datos.\n"
+        "- Escribe UN párrafo corto en español (2-4 oraciones) con una decisión "
+        "accionable basada en los datos del gráfico.\n"
+        "- Enfócate solo en qué decisión tomar según la información del gráfico.\n"
         "- Sé conciso, profesional y orientado a la acción.\n"
         "- No incluyas números inventados; habla en términos generales sobre "
         "qué buscar en el gráfico.\n"
-        "- Responde ÚNICAMENTE con un objeto JSON con la clave 'text'.\n\n"
-        'Ejemplo de respuesta: {"text": "Este gráfico muestra..."}'
+        "- Responde ÚNICAMENTE con un objeto JSON con la clave 'decision'.\n\n"
+        'Ejemplo de respuesta: {"decision": "Priorizar los sectores con mayor tasa de cierre y asignar más recursos comerciales a esas verticales."}'
     )
 
 
 @router.get("/{chart_type}", response_model=InsightResponse)
 async def get_insight(chart_type: str) -> InsightResponse:
-    """Return LLM-generated Spanish insight for a chart type."""
     context = _CHART_CONTEXT.get(chart_type)
     if not context:
         return InsightResponse(
             chart_type=chart_type,
-            text="Tipo de gráfico no reconocido.",
+            justification="",
+            decision="Tipo de gráfico no reconocido.",
         )
 
+    justification = _truncate_justification(context["justification"])
     prompt = _build_prompt(chart_type, context)
     raw = await call_llm(prompt, timeout=30.0, max_retries=2)
 
     if not raw:
         return InsightResponse(
             chart_type=chart_type,
-            text="No se pudo generar el análisis en este momento. Intente más tarde.",
+            justification=justification,
+            decision="No se pudo generar la decisión en este momento.",
         )
 
     try:
         data = json.loads(raw)
-        text = data.get("text", "")
-        if text:
-            return InsightResponse(chart_type=chart_type, text=text)
+        decision = data.get("decision", "")
+        if decision:
+            return InsightResponse(
+                chart_type=chart_type, justification=justification, decision=decision
+            )
     except (json.JSONDecodeError, KeyError):
-        # LLM returned plain text or malformed JSON — try to use raw text
         if len(raw) > 10:
-            return InsightResponse(chart_type=chart_type, text=raw.strip())
+            return InsightResponse(
+                chart_type=chart_type, justification=justification, decision=raw.strip()
+            )
 
     return InsightResponse(
         chart_type=chart_type,
-        text="No se pudo generar el análisis en este momento. Intente más tarde.",
+        justification=justification,
+        decision="No se pudo generar la decisión en este momento.",
     )
